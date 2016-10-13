@@ -649,44 +649,6 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  static private boolean jj_3R_11() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(41)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(40)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(42)) return true;
-    }
-    }
-    return false;
-  }
-
-  static private boolean jj_3_2() {
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_4() {
-    if (jj_scan_token(45)) return true;
-    if (jj_scan_token(PERIOD)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_10() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_4()) jj_scanpos = xsp;
-    if (jj_scan_token(45)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_1() {
-    if (jj_scan_token(45)) return true;
-    if (jj_scan_token(PERIOD)) return true;
-    return false;
-  }
-
   static private boolean jj_3R_8() {
     Token xsp;
     xsp = jj_scanpos;
@@ -703,7 +665,13 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   }
 
   static private boolean jj_3_3() {
-    if (jj_scan_token(45)) return true;
+    if (jj_scan_token(47)) return true;
+    if (jj_scan_token(PERIOD)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_1() {
+    if (jj_scan_token(47)) return true;
     if (jj_scan_token(PERIOD)) return true;
     return false;
   }
@@ -712,6 +680,38 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     if (jj_3R_8()) return true;
     if (jj_scan_token(COMP_OP)) return true;
     if (jj_3R_8()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_11() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(45)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(44)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(46)) return true;
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3_2() {
+    if (jj_3R_7()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_4() {
+    if (jj_scan_token(47)) return true;
+    if (jj_scan_token(PERIOD)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_10() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_4()) jj_scanpos = xsp;
+    if (jj_scan_token(47)) return true;
     return false;
   }
 
@@ -738,7 +738,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_la1_0 = new int[] {0xfe20,0xfe00,0xfe00,0x100000,0x0,0x30000000,0x1000000,0x30000000,0x0,0x0,0x400000,0x100000,0x0,0x400000,0x2000000,0x4000000,0x1000000,0x0,0x0,0x1000000,0x0,0x0,0x0,0x0,0x8000000,0x0,0x1c0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x8,0x2000,0x0,0x0,0x8,0x2040,0x0,0x0,0x8,0x0,0x0,0x0,0x0,0x2702,0x2000,0x0,0x2700,0x2,0x8,0x8,0x700,0x700,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x8,0x8000,0x0,0x0,0x8,0x8040,0x0,0x0,0x8,0x0,0x0,0x0,0x0,0xf002,0x8000,0x0,0xf000,0x2,0x8,0x8,0x7000,0x7000,0x0,};
    }
   static final private JJCalls[] jj_2_rtns = new JJCalls[4];
   static private boolean jj_rescan = false;

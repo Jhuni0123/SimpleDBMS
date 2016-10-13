@@ -74,6 +74,11 @@ PARSER_END(MyDBMSParser)
 
 SKIP : { " " | "\r" | "\t" | "\n" }
 
+/* KEYWORDS token should be in front of LEGAL_IDENTIFIER.
+ * Because javacc lexer generator choose token following rule
+ * 1. choose the token that most characters are matched.
+ * 2. if the number of characters matched is same, choose the token that defined earlier.
+ */
 TOKEN : /* Keywords */
 {
   < EXIT : "exit" >
@@ -115,14 +120,14 @@ TOKEN :
 | < UNDERSCORE : "_" >
 | < ASTERISK : "*" >
 | < QUOTE : "'" >
+| < SIGN : "+" | "-" >
+| < DIGIT : [ "0"-"9" ] >
+| < ALPHABET : [ "a"-"z", "A"-"Z" ] >
+| < COMP_OP : "<" | ">" | "=" | ">=" | "<=" | "!=" >
 | < CHAR_STRING : < QUOTE > (< NON_QUOTE_CHARACTER >)* < QUOTE > > 
 | < INT_VALUE : (< SIGN >)? (< DIGIT >)+ >
 | < DATE_VALUE : < NNNN > "-" < NN > "-" < NN > >
-| < SIGN : "+" | "-" >
-| < DIGIT : [ "0"-"9" ] >
 | < LEGAL_IDENTIFIER : < ALPHABET > (< ALPHABET > | < UNDERSCORE >)* >
-| < ALPHABET : [ "a"-"z", "A"-"Z" ] >
-| < COMP_OP : "<" | ">" | "=" | ">=" | "<=" | "!=" >
 | < NON_QUOTE_CHARACTER : < DIGIT > | < ALPHABET > | < NON_QUOTE_SPECIAL_CHARACTERS > | " " >
 | < NON_QUOTE_SPECIAL_CHARACTERS : ["`","-","=","~","!","@","#","$","%","^","&","*","(",")","_","+","[","]","{","}",";",":",",",".","/","<",">","?","\\","|"] >
 | < NNNN : < DIGIT > < DIGIT > < DIGIT > < DIGIT > >
@@ -324,6 +329,8 @@ void selectedColumn() :
 {}
 {
   (
+    // both tableName and columnName are start with LEGAL_IDENTIFIER.
+    // so we should LOOKAHEAD one more token to determine whether this part is exist.
     LOOKAHEAD(2)
     tableName()
     < PERIOD >
@@ -379,6 +386,9 @@ void referedTable() :
 void booleanValueExpression() :
 {}
 {
+  // if we choose booleanValueExpression() < OR > booleanTerm() , left recursion can occur(infinite loop).
+  // and when we change order like booleanTerm() < OR > booleanValueExpression , booleanTerm() is always appear at first.
+  // so we can bind it and write like below.
    booleanTerm()
   (
     < OR >
@@ -389,6 +399,7 @@ void booleanValueExpression() :
 void booleanTerm() :
 {} 
 {
+  // the reason is same as line 386.
   booleanFactor()
   (
     < AND >
@@ -422,6 +433,8 @@ void parenthesizedBooleanExpression() :
 void predicate() :
 {}
 {
+  // both comparisonPredicate and nullPredicate can start with < LEGAL_IDENTIFIER > "." < LEGAL_IDENTIFIER >.
+  // so we should LOOKAHEAD 3 more token to determine choice point.
   LOOKAHEAD(4)
   comparisonPredicate()
 | nullPredicate()
@@ -431,7 +444,8 @@ void nullPredicate() :
 {}
 {
   (
-    LOOKAHEAD(2)    tableName()
+    LOOKAHEAD(2) // the reason is same as line 329.
+    tableName()
     < PERIOD >
   )?
   columnName()
@@ -461,7 +475,7 @@ void compOperand() :
   comparableValue()
 | (
     (
-      LOOKAHEAD(2)
+      LOOKAHEAD(2) // the reason is same as line 329.
       tableName()
       < PERIOD >
     )?
