@@ -117,16 +117,14 @@ int query() :
 }
 {
   (
-    createTableQuery()
-    {
-      q = PRINT_CREATE_TABLE;
-    }
-  )
-| (
-  	dropTableQuery()
-  	{
-  	  q = PRINT_DROP_TABLE;
-  	}
+    (
+      createTableQuery()
+      { q = PRINT_CREATE_TABLE; }
+    )
+  | (
+      dropTableQuery()
+      { q = PRINT_DROP_TABLE; }
+    )
   )
   (
     {

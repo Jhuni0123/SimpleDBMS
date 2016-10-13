@@ -81,18 +81,18 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case CREATE:
       createTableQuery();
-      q = PRINT_CREATE_TABLE;
+        q = PRINT_CREATE_TABLE;
       break;
     case DROP:
       dropTableQuery();
-          q = PRINT_DROP_TABLE;
-      {if (true) return q;}
+        q = PRINT_DROP_TABLE;
       break;
     default:
       jj_la1[2] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+      {if (true) return q;}
     throw new Error("Missing return statement in function");
   }
 
