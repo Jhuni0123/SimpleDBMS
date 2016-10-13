@@ -2,6 +2,7 @@
 public class MyDBMSParser implements MyDBMSParserConstants {
   public static final int PRINT_SYNTAX_ERROR = 0;
   public static final int PRINT_CREATE_TABLE = 1;
+  public static final int PRINT_DROP_TABLE = 2;
 
   public static void main(String args[]) throws ParseException
   {
@@ -32,6 +33,8 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       case PRINT_CREATE_TABLE:
         System.out.println("\u005c'CREATE TABLE\u005c' requested");
         break;
+      case PRINT_DROP_TABLE:
+        System.out.println("\u005c'DROP TABLE\u005c' requested");
     }
     System.out.print("DB_2015-18380> ");
   }
@@ -39,6 +42,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   static final public void command() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case CREATE:
+    case DROP:
       queryList();
       break;
     case EXIT:
@@ -62,6 +66,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       printMessage(q);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case CREATE:
+      case DROP:
         ;
         break;
       default:
@@ -73,9 +78,21 @@ public class MyDBMSParser implements MyDBMSParserConstants {
 
   static final public int query() throws ParseException {
   int q;
-    createTableQuery();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case CREATE:
+      createTableQuery();
       q = PRINT_CREATE_TABLE;
+      break;
+    case DROP:
+      dropTableQuery();
+          q = PRINT_DROP_TABLE;
       {if (true) return q;}
+      break;
+    default:
+      jj_la1[2] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
     throw new Error("Missing return statement in function");
   }
 
@@ -84,6 +101,12 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     jj_consume_token(TABLE);
     tableName();
     tableElementList();
+  }
+
+  static final public void dropTableQuery() throws ParseException {
+    jj_consume_token(DROP);
+    jj_consume_token(TABLE);
+    tableName();
   }
 
   static final public void tableElementList() throws ParseException {
@@ -96,7 +119,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         ;
         break;
       default:
-        jj_la1[2] = jj_gen;
+        jj_la1[3] = jj_gen;
         break label_2;
       }
       jj_consume_token(COMMA);
@@ -115,7 +138,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       tableConstraintDefinition();
       break;
     default:
-      jj_la1[3] = jj_gen;
+      jj_la1[4] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -130,7 +153,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_consume_token(NULL);
       break;
     default:
-      jj_la1[4] = jj_gen;
+      jj_la1[5] = jj_gen;
       ;
     }
   }
@@ -144,7 +167,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       referentialConstraint();
       break;
     default:
-      jj_la1[5] = jj_gen;
+      jj_la1[6] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -175,7 +198,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         ;
         break;
       default:
-        jj_la1[6] = jj_gen;
+        jj_la1[7] = jj_gen;
         break label_3;
       }
       jj_consume_token(COMMA);
@@ -199,7 +222,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_consume_token(DATE);
       break;
     default:
-      jj_la1[7] = jj_gen;
+      jj_la1[8] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -223,13 +246,13 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   static public Token jj_nt;
   static private int jj_ntk;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[8];
+  static final private int[] jj_la1 = new int[9];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x220,0x200,0x100000,0x2006000,0x800,0x6000,0x100000,0x1c0,};
+      jj_la1_0 = new int[] {0x620,0x600,0x600,0x200000,0x400c000,0x1000,0xc000,0x200000,0x1c0,};
    }
 
   /** Constructor with InputStream. */
@@ -250,7 +273,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -264,7 +287,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -281,7 +304,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -291,7 +314,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -307,7 +330,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -316,7 +339,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 8; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   static private Token jj_consume_token(int kind) throws ParseException {
@@ -367,12 +390,12 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   /** Generate ParseException. */
   static public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[27];
+    boolean[] la1tokens = new boolean[28];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 9; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -381,7 +404,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         }
       }
     }
-    for (int i = 0; i < 27; i++) {
+    for (int i = 0; i < 28; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
