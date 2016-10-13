@@ -399,7 +399,7 @@ void booleanValueExpression() :
 void booleanTerm() :
 {} 
 {
-  // the reason is same as line 386.
+  // same as line 391.
   booleanFactor()
   (
     < AND >
@@ -444,7 +444,7 @@ void nullPredicate() :
 {}
 {
   (
-    LOOKAHEAD(2) // the reason is same as line 329.
+    LOOKAHEAD(2) // same as line 332.
     tableName()
     < PERIOD >
   )?
@@ -475,7 +475,7 @@ void compOperand() :
   comparableValue()
 | (
     (
-      LOOKAHEAD(2) // the reason is same as line 329.
+      LOOKAHEAD(2) // same as line 332.
       tableName()
       < PERIOD >
     )?
