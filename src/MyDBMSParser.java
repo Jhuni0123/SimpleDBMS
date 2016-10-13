@@ -38,7 +38,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
 
   static final public void command() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case CREATE_TABLE:
+    case CREATE:
       queryList();
       break;
     case EXIT:
@@ -61,7 +61,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_consume_token(SEMICOLON);
       printMessage(q);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case CREATE_TABLE:
+      case CREATE:
         ;
         break;
       default:
@@ -80,7 +80,8 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   }
 
   static final public void createTableQuery() throws ParseException {
-    jj_consume_token(CREATE_TABLE);
+    jj_consume_token(CREATE);
+    jj_consume_token(TABLE);
     tableName();
     tableElementList();
   }
@@ -109,8 +110,8 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     case LEGAL_IDENTIFIER:
       columnDefinition();
       break;
-    case PRIMARY_KEY:
-    case FOREIGN_KEY:
+    case PRIMARY:
+    case FOREIGN:
       tableConstraintDefinition();
       break;
     default:
@@ -124,8 +125,9 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     columnName();
     dataType();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case NOT_NULL:
-      jj_consume_token(NOT_NULL);
+    case NOT:
+      jj_consume_token(NOT);
+      jj_consume_token(NULL);
       break;
     default:
       jj_la1[4] = jj_gen;
@@ -135,10 +137,10 @@ public class MyDBMSParser implements MyDBMSParserConstants {
 
   static final public void tableConstraintDefinition() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case PRIMARY_KEY:
+    case PRIMARY:
       primaryKeyConstraint();
       break;
-    case FOREIGN_KEY:
+    case FOREIGN:
       referentialConstraint();
       break;
     default:
@@ -149,12 +151,14 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   }
 
   static final public void primaryKeyConstraint() throws ParseException {
-    jj_consume_token(PRIMARY_KEY);
+    jj_consume_token(PRIMARY);
+    jj_consume_token(KEY);
     columnNameList();
   }
 
   static final public void referentialConstraint() throws ParseException {
-    jj_consume_token(FOREIGN_KEY);
+    jj_consume_token(FOREIGN);
+    jj_consume_token(KEY);
     columnNameList();
     jj_consume_token(REFERENCES);
     tableName();
@@ -225,7 +229,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x220,0x200,0x20000,0x401800,0x400,0x1800,0x20000,0x1c0,};
+      jj_la1_0 = new int[] {0x220,0x200,0x100000,0x2006000,0x800,0x6000,0x100000,0x1c0,};
    }
 
   /** Constructor with InputStream. */
@@ -363,7 +367,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   /** Generate ParseException. */
   static public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[24];
+    boolean[] la1tokens = new boolean[27];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -377,7 +381,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         }
       }
     }
-    for (int i = 0; i < 24; i++) {
+    for (int i = 0; i < 27; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
