@@ -7,6 +7,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   public static final int PRINT_SHOW_TABLES = 4;
   public static final int PRINT_SELECT = 5;
   public static final int PRINT_INSERT = 6;
+  public static final int PRINT_DELETE = 7;
 
   public static void main(String args[]) throws ParseException
   {
@@ -52,6 +53,9 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       case PRINT_INSERT:
         System.out.println("\u005c'INSERT\u005c' requested");
         break;
+      case PRINT_DELETE:
+        System.out.println("\u005c'DELETE\u005c' requested");
+        break;
     }
     System.out.print("DB_2015-18380> ");
   }
@@ -64,6 +68,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     case SHOW:
     case SELECT:
     case INSERT:
+    case DELETE:
       queryList();
       break;
     case EXIT:
@@ -92,6 +97,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       case SHOW:
       case SELECT:
       case INSERT:
+      case DELETE:
         ;
         break;
       default:
@@ -127,6 +133,10 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     case INSERT:
       insertQuery();
         q = PRINT_INSERT;
+      break;
+    case DELETE:
+      deleteQuery();
+        q = PRINT_DELETE;
       break;
     default:
       jj_la1[2] = jj_gen;
@@ -173,6 +183,20 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     insertColumnAndSource();
   }
 
+  static final public void deleteQuery() throws ParseException {
+    jj_consume_token(DELETE);
+    jj_consume_token(FROM);
+    tableName();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case WHERE:
+      whereClause();
+      break;
+    default:
+      jj_la1[3] = jj_gen;
+      ;
+    }
+  }
+
   static final public void tableElementList() throws ParseException {
     jj_consume_token(LEFT_PAREN);
     tableElement();
@@ -183,7 +207,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         ;
         break;
       default:
-        jj_la1[3] = jj_gen;
+        jj_la1[4] = jj_gen;
         break label_2;
       }
       jj_consume_token(COMMA);
@@ -202,7 +226,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       tableConstraintDefinition();
       break;
     default:
-      jj_la1[4] = jj_gen;
+      jj_la1[5] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -217,7 +241,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_consume_token(NULL);
       break;
     default:
-      jj_la1[5] = jj_gen;
+      jj_la1[6] = jj_gen;
       ;
     }
   }
@@ -231,7 +255,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       referentialConstraint();
       break;
     default:
-      jj_la1[6] = jj_gen;
+      jj_la1[7] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -266,7 +290,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
           ;
           break;
         default:
-          jj_la1[7] = jj_gen;
+          jj_la1[8] = jj_gen;
           break label_3;
         }
         jj_consume_token(COMMA);
@@ -274,7 +298,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       }
       break;
     default:
-      jj_la1[8] = jj_gen;
+      jj_la1[9] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -294,7 +318,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       columnName();
       break;
     default:
-      jj_la1[9] = jj_gen;
+      jj_la1[10] = jj_gen;
       ;
     }
   }
@@ -306,7 +330,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       whereClause();
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[11] = jj_gen;
       ;
     }
   }
@@ -330,7 +354,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         ;
         break;
       default:
-        jj_la1[11] = jj_gen;
+        jj_la1[12] = jj_gen;
         break label_4;
       }
       jj_consume_token(COMMA);
@@ -346,7 +370,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       tableName();
       break;
     default:
-      jj_la1[12] = jj_gen;
+      jj_la1[13] = jj_gen;
       ;
     }
   }
@@ -359,7 +383,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       booleanValueExpression();
       break;
     default:
-      jj_la1[13] = jj_gen;
+      jj_la1[14] = jj_gen;
       ;
     }
   }
@@ -372,7 +396,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       booleanTerm();
       break;
     default:
-      jj_la1[14] = jj_gen;
+      jj_la1[15] = jj_gen;
       ;
     }
   }
@@ -383,7 +407,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_consume_token(NOT);
       break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[16] = jj_gen;
       ;
     }
     booleanTest();
@@ -401,7 +425,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       parenthesizedBooleanExpression();
       break;
     default:
-      jj_la1[16] = jj_gen;
+      jj_la1[17] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -422,7 +446,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         nullPredicate();
         break;
       default:
-        jj_la1[17] = jj_gen;
+        jj_la1[18] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -447,7 +471,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_consume_token(NOT);
       break;
     default:
-      jj_la1[18] = jj_gen;
+      jj_la1[19] = jj_gen;
       ;
     }
     jj_consume_token(NULL);
@@ -476,7 +500,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       columnName();
       break;
     default:
-      jj_la1[19] = jj_gen;
+      jj_la1[20] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -488,7 +512,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       columnNameList();
       break;
     default:
-      jj_la1[20] = jj_gen;
+      jj_la1[21] = jj_gen;
       ;
     }
     valueList();
@@ -504,7 +528,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         ;
         break;
       default:
-        jj_la1[21] = jj_gen;
+        jj_la1[22] = jj_gen;
         break label_5;
       }
       jj_consume_token(COMMA);
@@ -524,7 +548,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         ;
         break;
       default:
-        jj_la1[22] = jj_gen;
+        jj_la1[23] = jj_gen;
         break label_6;
       }
       jj_consume_token(COMMA);
@@ -544,7 +568,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       comparableValue();
       break;
     default:
-      jj_la1[23] = jj_gen;
+      jj_la1[24] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -562,7 +586,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_consume_token(DATE_VALUE);
       break;
     default:
-      jj_la1[24] = jj_gen;
+      jj_la1[25] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -583,7 +607,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_consume_token(DATE);
       break;
     default:
-      jj_la1[25] = jj_gen;
+      jj_la1[26] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -628,11 +652,11 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   static private boolean jj_3R_11() {
     Token xsp;
     xsp = jj_scanpos;
+    if (jj_scan_token(41)) {
+    jj_scanpos = xsp;
     if (jj_scan_token(40)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(39)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(41)) return true;
+    if (jj_scan_token(42)) return true;
     }
     }
     return false;
@@ -644,7 +668,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   }
 
   static private boolean jj_3_4() {
-    if (jj_scan_token(44)) return true;
+    if (jj_scan_token(45)) return true;
     if (jj_scan_token(PERIOD)) return true;
     return false;
   }
@@ -653,12 +677,12 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_4()) jj_scanpos = xsp;
-    if (jj_scan_token(44)) return true;
+    if (jj_scan_token(45)) return true;
     return false;
   }
 
   static private boolean jj_3_1() {
-    if (jj_scan_token(44)) return true;
+    if (jj_scan_token(45)) return true;
     if (jj_scan_token(PERIOD)) return true;
     return false;
   }
@@ -679,7 +703,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   }
 
   static private boolean jj_3_3() {
-    if (jj_scan_token(44)) return true;
+    if (jj_scan_token(45)) return true;
     if (jj_scan_token(PERIOD)) return true;
     return false;
   }
@@ -703,7 +727,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   static private Token jj_scanpos, jj_lastpos;
   static private int jj_la;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[26];
+  static final private int[] jj_la1 = new int[27];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -711,10 +735,10 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x7e20,0x7e00,0x7e00,0x0,0x18000000,0x800000,0x18000000,0x0,0x0,0x200000,0x80000,0x0,0x200000,0x1000000,0x2000000,0x800000,0x0,0x0,0x800000,0x0,0x0,0x0,0x0,0x4000000,0x0,0x1c0,};
+      jj_la1_0 = new int[] {0xfe20,0xfe00,0xfe00,0x100000,0x0,0x30000000,0x1000000,0x30000000,0x0,0x0,0x400000,0x100000,0x0,0x400000,0x2000000,0x4000000,0x1000000,0x0,0x0,0x1000000,0x0,0x0,0x0,0x0,0x8000000,0x0,0x1c0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x4,0x1000,0x0,0x0,0x4,0x1020,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x1381,0x1000,0x0,0x1380,0x1,0x4,0x4,0x380,0x380,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x8,0x2000,0x0,0x0,0x8,0x2040,0x0,0x0,0x8,0x0,0x0,0x0,0x0,0x2702,0x2000,0x0,0x2700,0x2,0x8,0x8,0x700,0x700,0x0,};
    }
   static final private JJCalls[] jj_2_rtns = new JJCalls[4];
   static private boolean jj_rescan = false;
@@ -738,7 +762,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 26; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 27; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -753,7 +777,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 26; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 27; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -771,7 +795,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 26; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 27; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -782,7 +806,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 26; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 27; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -799,7 +823,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 26; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 27; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -809,7 +833,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 26; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 27; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -921,12 +945,12 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   /** Generate ParseException. */
   static public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[51];
+    boolean[] la1tokens = new boolean[52];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 26; i++) {
+    for (int i = 0; i < 27; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -938,7 +962,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         }
       }
     }
-    for (int i = 0; i < 51; i++) {
+    for (int i = 0; i < 52; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

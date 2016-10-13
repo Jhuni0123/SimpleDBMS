@@ -16,6 +16,7 @@ public class MyDBMSParser
   public static final int PRINT_SHOW_TABLES = 4;
   public static final int PRINT_SELECT = 5;
   public static final int PRINT_INSERT = 6;
+  public static final int PRINT_DELETE = 7;
   
   public static void main(String args[]) throws ParseException
   {
@@ -61,6 +62,9 @@ public class MyDBMSParser
       case PRINT_INSERT:
       	System.out.println("\'INSERT\' requested");
       	break;
+      case PRINT_DELETE:
+      	System.out.println("\'DELETE\' requested");
+      	break;
     }
     System.out.print("DB_2015-18380> ");
   }
@@ -82,6 +86,7 @@ TOKEN : /* Keywords */
 | < SHOW : "show" >
 | < SELECT : "select" >
 | < INSERT : "insert" >
+| < DELETE : "delete" >
 | < TABLE : "table" >
 | < TABLES : "tables" >
 | < VALUES : "values" >
@@ -181,6 +186,10 @@ int query() :
       insertQuery()
       { q = PRINT_INSERT; }
     )
+  | (
+      deleteQuery()
+      { q = PRINT_DELETE; }
+    )
   )
   (
     {
@@ -231,6 +240,16 @@ void insertQuery() :
   < INSERT > < INTO >
   tableName()
   insertColumnAndSource()
+}
+
+void deleteQuery() :
+{}
+{
+  < DELETE > < FROM >
+  tableName()
+  (
+    whereClause()
+  )?
 }
 
 void tableElementList() :
