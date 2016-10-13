@@ -1,7 +1,7 @@
 options
 {
   static = true;
-  DEBUG_PARSER = false;
+  DEBUG_PARSER = true;
   IGNORE_CASE = true;
 }
 
@@ -82,6 +82,7 @@ TOKEN : /* Keywords */
 | < FROM : "from" >
 | < WHERE : "where" >
 | < AS : "as" >
+| < IS : "is" >
 | < NOT : "not" >
 | < OR : "or" >
 | < AND : "and" >
@@ -109,11 +110,11 @@ TOKEN :
 | < DIGIT : [ "0"-"9" ] >
 | < LEGAL_IDENTIFIER : < ALPHABET > (< ALPHABET > | < UNDERSCORE >)* >
 | < ALPHABET : [ "a"-"z", "A"-"Z" ] >
+| < COMP_OP : "<" | ">" | "=" | ">=" | "<=" | "!=" >
 | < NON_QUOTE_CHARACTER : < DIGIT > | < ALPHABET > | < NON_QUOTE_SPECIAL_CHARACTERS > | " " >
 | < NON_QUOTE_SPECIAL_CHARACTERS : ["`","-","=","~","!","@","#","$","%","^","&","*","(",")","_","+","[","]","{","}",";",":",",",".","/","<",">","?","\\","|"] >
 | < NNNN : < DIGIT > < DIGIT > < DIGIT > < DIGIT > >
 | < NN : < DIGIT > < DIGIT > >
-| < COMP_OP : "<"|">"|"="|">="|"<="|"!=" >
 }
 
 void command() :
@@ -285,6 +286,7 @@ void selectedColumn() :
 {}
 {
   (
+    LOOKAHEAD(2)
     tableName()
     < PERIOD >
   )?
@@ -339,23 +341,21 @@ void referedTable() :
 void booleanValueExpression() :
 {}
 {
-  booleanTerm()
-| (
-    booleanTerm()
+   booleanTerm()
+  (
     < OR >
     booleanValueExpression()
-  )
+  )?
 }
 
 void booleanTerm() :
 {} 
 {
   booleanFactor()
-| (
-    booleanFactor()
+  (
     < AND >
     booleanTerm()
-  )
+  )?
 }
 
 void booleanFactor() :
@@ -384,6 +384,7 @@ void parenthesizedBooleanExpression() :
 void predicate() :
 {}
 {
+  LOOKAHEAD(4)
   comparisonPredicate()
 | nullPredicate()
 }
@@ -391,10 +392,21 @@ void predicate() :
 void nullPredicate() :
 {}
 {
-  (    tableName()
+  (
+    LOOKAHEAD(2)    tableName()
     < PERIOD >
   )?
   columnName()
+  nullOperation()
+}
+
+void nullOperation() :
+{}
+{
+  < IS >
+  (    < NOT >
+  )?
+  < NULL >
 }
 
 void comparisonPredicate() :
@@ -411,6 +423,7 @@ void compOperand() :
   comparableValue()
 | (
     (
+      LOOKAHEAD(2)
       tableName()
       < PERIOD >
     )?
