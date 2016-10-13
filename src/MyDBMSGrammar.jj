@@ -12,6 +12,7 @@ public class MyDBMSParser
   public static final int PRINT_SYNTAX_ERROR = 0;
   public static final int PRINT_CREATE_TABLE = 1;
   public static final int PRINT_DROP_TABLE = 2;
+  public static final int PRINT_DESC = 3;
   
   public static void main(String args[]) throws ParseException
   {
@@ -44,6 +45,10 @@ public class MyDBMSParser
       	break;
       case PRINT_DROP_TABLE:
       	System.out.println("\'DROP TABLE\' requested");
+      	break;
+      case PRINT_DESC:
+      	System.out.println("\'DESC\' requested");
+      	break;	
     }
     System.out.print("DB_2015-18380> ");
   }
@@ -61,6 +66,7 @@ TOKEN : /* Keywords */
 | < DATE : "date" >
 | < CREATE : "create" >
 | < DROP : "drop" >
+| < DESC : "desc" >
 | < TABLE : "table" >
 | < NOT : "not" >
 | < NULL : "null" >
@@ -125,6 +131,10 @@ int query() :
       dropTableQuery()
       { q = PRINT_DROP_TABLE; }
     )
+  | (
+      descQuery()
+      { q = PRINT_DESC; }
+    )
   )
   (
     {
@@ -147,6 +157,14 @@ void dropTableQuery() :
   < DROP > < TABLE >
   tableName()
 }
+
+void descQuery() :
+{}
+{
+  < DESC >
+  tableName()
+}
+
 void tableElementList() :
 {}
 {
