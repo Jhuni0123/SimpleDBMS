@@ -12,12 +12,12 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   public static void main(String args[]) throws ParseException
   {
     MyDBMSParser parser = new MyDBMSParser(System.in);
-    System.out.print("DB_2015-18380> ");
 
     while (true)
     {
       try
       {
+        System.out.print("DB_2015-18380> ");
         parser.command();
       }
       catch (Exception e)
@@ -30,6 +30,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
 
   public static void printMessage(int q)
   {
+    System.out.print("DB_2015-18380> ");
     switch(q)
     {
       case PRINT_SYNTAX_ERROR:
@@ -57,7 +58,6 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         System.out.println("\u005c'DELETE\u005c' requested");
         break;
     }
-    System.out.print("DB_2015-18380> ");
   }
 
   static final public void command() throws ParseException {

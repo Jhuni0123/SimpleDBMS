@@ -21,12 +21,12 @@ public class MyDBMSParser
   public static void main(String args[]) throws ParseException
   {
     MyDBMSParser parser = new MyDBMSParser(System.in);
-    System.out.print("DB_2015-18380> ");
 
     while (true)
     {
       try
       {
+        System.out.print("DB_2015-18380> ");
         parser.command();
       }
       catch (Exception e)
@@ -39,6 +39,7 @@ public class MyDBMSParser
 
   public static void printMessage(int q)
   {
+    System.out.print("DB_2015-18380> ");
     switch(q)
     {
       case PRINT_SYNTAX_ERROR:
@@ -66,7 +67,6 @@ public class MyDBMSParser
       	System.out.println("\'DELETE\' requested");
       	break;
     }
-    System.out.print("DB_2015-18380> ");
   }
 }
 
