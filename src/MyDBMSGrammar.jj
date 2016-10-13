@@ -13,6 +13,7 @@ public class MyDBMSParser
   public static final int PRINT_CREATE_TABLE = 1;
   public static final int PRINT_DROP_TABLE = 2;
   public static final int PRINT_DESC = 3;
+  public static final int PRINT_SHOW_TABLES = 4;
   
   public static void main(String args[]) throws ParseException
   {
@@ -48,7 +49,10 @@ public class MyDBMSParser
       	break;
       case PRINT_DESC:
       	System.out.println("\'DESC\' requested");
-      	break;	
+      	break;
+      case PRINT_SHOW_TABLES:
+      	System.out.println("\'SHOW TABLES\' requested");
+      	break;
     }
     System.out.print("DB_2015-18380> ");
   }
@@ -67,7 +71,9 @@ TOKEN : /* Keywords */
 | < CREATE : "create" >
 | < DROP : "drop" >
 | < DESC : "desc" >
+| < SHOW : "show" >
 | < TABLE : "table" >
+| < TABLES : "tables" >
 | < NOT : "not" >
 | < NULL : "null" >
 | < PRIMARY : "primary" >
@@ -134,6 +140,10 @@ int query() :
   | (
       descQuery()
       { q = PRINT_DESC; }
+    )
+  | (
+      < SHOW > < TABLES >
+      { q = PRINT_SHOW_TABLES; }
     )
   )
   (

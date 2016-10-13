@@ -4,6 +4,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   public static final int PRINT_CREATE_TABLE = 1;
   public static final int PRINT_DROP_TABLE = 2;
   public static final int PRINT_DESC = 3;
+  public static final int PRINT_SHOW_TABLES = 4;
 
   public static void main(String args[]) throws ParseException
   {
@@ -40,6 +41,9 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       case PRINT_DESC:
         System.out.println("\u005c'DESC\u005c' requested");
         break;
+      case PRINT_SHOW_TABLES:
+        System.out.println("\u005c'SHOW TABLES\u005c' requested");
+        break;
     }
     System.out.print("DB_2015-18380> ");
   }
@@ -49,6 +53,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     case CREATE:
     case DROP:
     case DESC:
+    case SHOW:
       queryList();
       break;
     case EXIT:
@@ -74,6 +79,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       case CREATE:
       case DROP:
       case DESC:
+      case SHOW:
         ;
         break;
       default:
@@ -97,6 +103,11 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     case DESC:
       descQuery();
         q = PRINT_DESC;
+      break;
+    case SHOW:
+      jj_consume_token(SHOW);
+      jj_consume_token(TABLES);
+        q = PRINT_SHOW_TABLES;
       break;
     default:
       jj_la1[2] = jj_gen;
@@ -268,7 +279,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0xe20,0xe00,0xe00,0x400000,0x8018000,0x2000,0x18000,0x400000,0x1c0,};
+      jj_la1_0 = new int[] {0x1e20,0x1e00,0x1e00,0x1000000,0x20060000,0x8000,0x60000,0x1000000,0x1c0,};
    }
 
   /** Constructor with InputStream. */
@@ -406,7 +417,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   /** Generate ParseException. */
   static public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[29];
+    boolean[] la1tokens = new boolean[31];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -420,7 +431,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         }
       }
     }
-    for (int i = 0; i < 29; i++) {
+    for (int i = 0; i < 31; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
