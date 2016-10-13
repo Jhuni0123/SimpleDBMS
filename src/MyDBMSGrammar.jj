@@ -14,6 +14,7 @@ public class MyDBMSParser
   public static final int PRINT_DROP_TABLE = 2;
   public static final int PRINT_DESC = 3;
   public static final int PRINT_SHOW_TABLES = 4;
+  public static final int PRINT_SELECT = 5;
   
   public static void main(String args[]) throws ParseException
   {
@@ -53,6 +54,9 @@ public class MyDBMSParser
       case PRINT_SHOW_TABLES:
       	System.out.println("\'SHOW TABLES\' requested");
       	break;
+      case PRINT_SELECT:
+      	System.out.println("\'SELECT\' requested");
+      	break;
     }
     System.out.print("DB_2015-18380> ");
   }
@@ -72,9 +76,15 @@ TOKEN : /* Keywords */
 | < DROP : "drop" >
 | < DESC : "desc" >
 | < SHOW : "show" >
+| < SELECT : "select" >
 | < TABLE : "table" >
 | < TABLES : "tables" >
+| < FROM : "from" >
+| < WHERE : "where" >
+| < AS : "as" >
 | < NOT : "not" >
+| < OR : "or" >
+| < AND : "and" >
 | < NULL : "null" >
 | < PRIMARY : "primary" >
 | < FOREIGN : "foreign" >
@@ -88,12 +98,22 @@ TOKEN :
 | < LEFT_PAREN : "(" >
 | < RIGHT_PAREN : ")" >
 | < COMMA : "," >
+| < PERIOD : "." >
 | < UNDERSCORE : "_" >
-| < INT_VALUE : (< SIGN >)? (< DIGIT >)+>
+| < ASTERISK : "*" >
+| < QUOTE : "'" >
+| < CHAR_STRING : < QUOTE > (< NON_QUOTE_CHARACTER >)* < QUOTE > > 
+| < INT_VALUE : (< SIGN >)? (< DIGIT >)+ >
+| < DATE_VALUE : < NNNN > "-" < NN > "-" < NN > >
 | < SIGN : "+" | "-" >
 | < DIGIT : [ "0"-"9" ] >
 | < LEGAL_IDENTIFIER : < ALPHABET > (< ALPHABET > | < UNDERSCORE >)* >
 | < ALPHABET : [ "a"-"z", "A"-"Z" ] >
+| < NON_QUOTE_CHARACTER : < DIGIT > | < ALPHABET > | < NON_QUOTE_SPECIAL_CHARACTERS > | " " >
+| < NON_QUOTE_SPECIAL_CHARACTERS : ["`","-","=","~","!","@","#","$","%","^","&","*","(",")","_","+","[","]","{","}",";",":",",",".","/","<",">","?","\\","|"] >
+| < NNNN : < DIGIT > < DIGIT > < DIGIT > < DIGIT > >
+| < NN : < DIGIT > < DIGIT > >
+| < COMP_OP : "<"|">"|"="|">="|"<="|"!=" >
 }
 
 void command() :
@@ -142,8 +162,12 @@ int query() :
       { q = PRINT_DESC; }
     )
   | (
-      < SHOW > < TABLES >
+      showTablesQuery()
       { q = PRINT_SHOW_TABLES; }
+    )
+  | (
+      selectQuery()
+      { q = PRINT_SELECT; }
     )
   )
   (
@@ -173,6 +197,20 @@ void descQuery() :
 {
   < DESC >
   tableName()
+}
+
+void showTablesQuery() :
+{}
+{
+  < SHOW > < TABLES >
+}
+
+void selectQuery() :
+{}
+{
+  < SELECT >
+  selectList()
+  tableExpression()
 }
 
 void tableElementList() :
@@ -229,6 +267,164 @@ void referentialConstraint() :
   columnNameList()
 }
 
+
+void selectList() :
+{}
+{
+  < ASTERISK >
+| (
+    selectedColumn()
+    (
+      < COMMA >
+      selectedColumn()
+    )*
+  )
+}
+
+void selectedColumn() :
+{}
+{
+  (
+    tableName()
+    < PERIOD >
+  )?
+  columnName()
+  (
+    < AS >
+    columnName()
+  )?
+}
+
+void tableExpression() :
+{}
+{
+  fromClause()
+  (
+    whereClause()
+  )?
+}
+
+void fromClause() :
+{}
+{
+  < FROM >
+  tableReferenceList()
+}
+
+void whereClause() :
+{}
+{
+  < WHERE >
+  booleanValueExpression()
+}
+
+void tableReferenceList() :
+{}
+{
+  referedTable()
+  (    < COMMA >
+    referedTable()
+  )*
+}
+
+void referedTable() :
+{}
+{
+  tableName()
+  (    < AS >
+    tableName()
+  )?
+}
+
+void booleanValueExpression() :
+{}
+{
+  booleanTerm()
+| (
+    booleanTerm()
+    < OR >
+    booleanValueExpression()
+  )
+}
+
+void booleanTerm() :
+{} 
+{
+  booleanFactor()
+| (
+    booleanFactor()
+    < AND >
+    booleanTerm()
+  )
+}
+
+void booleanFactor() :
+{}
+{
+  (    < NOT >
+  )?
+  booleanTest()
+}
+
+void booleanTest() :
+{}
+{
+  predicate()
+| parenthesizedBooleanExpression()
+}
+
+void parenthesizedBooleanExpression() :
+{}
+{
+  < LEFT_PAREN >
+  booleanValueExpression()
+  < RIGHT_PAREN >
+}
+
+void predicate() :
+{}
+{
+  comparisonPredicate()
+| nullPredicate()
+}
+
+void nullPredicate() :
+{}
+{
+  (    tableName()
+    < PERIOD >
+  )?
+  columnName()
+}
+
+void comparisonPredicate() :
+{}
+{
+  compOperand()
+  < COMP_OP >
+  compOperand()
+}
+
+void compOperand() :
+{}
+{
+  comparableValue()
+| (
+    (
+      tableName()
+      < PERIOD >
+    )?
+    columnName()
+  )
+}
+
+void comparableValue() :
+{}
+{
+  < INT_VALUE >
+| < CHAR_STRING >
+| < DATE_VALUE >
+}
 void columnNameList() :
 {}
 {
