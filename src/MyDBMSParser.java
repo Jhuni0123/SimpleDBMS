@@ -12,12 +12,12 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   public static void main(String args[]) throws ParseException
   {
     MyDBMSParser parser = new MyDBMSParser(System.in);
+    System.out.print("DB_2015-18380> ");
 
     while (true)
     {
       try
       {
-        System.out.print("DB_2015-18380> ");
         parser.command();
       }
       catch (Exception e)
@@ -30,7 +30,6 @@ public class MyDBMSParser implements MyDBMSParserConstants {
 
   public static void printMessage(int q)
   {
-    System.out.print("DB_2015-18380> ");
     switch(q)
     {
       case PRINT_SYNTAX_ERROR:
@@ -58,6 +57,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         System.out.println("\u005c'DELETE\u005c' requested");
         break;
     }
+    System.out.print("DB_2015-18380> ");
   }
 
   static final public void command() throws ParseException {
@@ -415,10 +415,10 @@ public class MyDBMSParser implements MyDBMSParserConstants {
 
   static final public void booleanTest() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LEGAL_IDENTIFIER:
     case CHAR_STRING:
     case INT_VALUE:
     case DATE_VALUE:
-    case LEGAL_IDENTIFIER:
       predicate();
       break;
     case LEFT_PAREN:
@@ -665,13 +665,13 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   }
 
   static private boolean jj_3_3() {
-    if (jj_scan_token(47)) return true;
+    if (jj_scan_token(41)) return true;
     if (jj_scan_token(PERIOD)) return true;
     return false;
   }
 
   static private boolean jj_3_1() {
-    if (jj_scan_token(47)) return true;
+    if (jj_scan_token(41)) return true;
     if (jj_scan_token(PERIOD)) return true;
     return false;
   }
@@ -686,11 +686,11 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   static private boolean jj_3R_11() {
     Token xsp;
     xsp = jj_scanpos;
+    if (jj_scan_token(46)) {
+    jj_scanpos = xsp;
     if (jj_scan_token(45)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(44)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(46)) return true;
+    if (jj_scan_token(47)) return true;
     }
     }
     return false;
@@ -702,7 +702,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   }
 
   static private boolean jj_3_4() {
-    if (jj_scan_token(47)) return true;
+    if (jj_scan_token(41)) return true;
     if (jj_scan_token(PERIOD)) return true;
     return false;
   }
@@ -711,7 +711,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_4()) jj_scanpos = xsp;
-    if (jj_scan_token(47)) return true;
+    if (jj_scan_token(41)) return true;
     return false;
   }
 
@@ -738,7 +738,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_la1_0 = new int[] {0xfe20,0xfe00,0xfe00,0x100000,0x0,0x30000000,0x1000000,0x30000000,0x0,0x0,0x400000,0x100000,0x0,0x400000,0x2000000,0x4000000,0x1000000,0x0,0x0,0x1000000,0x0,0x0,0x0,0x0,0x8000000,0x0,0x1c0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x8,0x8000,0x0,0x0,0x8,0x8040,0x0,0x0,0x8,0x0,0x0,0x0,0x0,0xf002,0x8000,0x0,0xf000,0x2,0x8,0x8,0x7000,0x7000,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x8,0x200,0x0,0x0,0x8,0x240,0x0,0x0,0x8,0x0,0x0,0x0,0x0,0xe202,0x200,0x0,0xe200,0x2,0x8,0x8,0xe000,0xe000,0x0,};
    }
   static final private JJCalls[] jj_2_rtns = new JJCalls[4];
   static private boolean jj_rescan = false;
@@ -945,7 +945,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   /** Generate ParseException. */
   static public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[52];
+    boolean[] la1tokens = new boolean[51];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -962,7 +962,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         }
       }
     }
-    for (int i = 0; i < 52; i++) {
+    for (int i = 0; i < 51; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
