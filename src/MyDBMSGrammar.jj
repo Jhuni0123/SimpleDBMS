@@ -113,7 +113,15 @@ TOKEN : /* Keywords */
 
 TOKEN :
 {
-  < SEMICOLON : ";" >
+  < CHAR_STRING : < QUOTE > (< NON_QUOTE_CHARACTER >)* < QUOTE > > 
+| < INT_VALUE : (< SIGN >)? (< DIGIT >)+ >
+| < DATE_VALUE : < NNNN > "-" < NN > "-" < NN > >
+| < LEGAL_IDENTIFIER : < ALPHABET > (< ALPHABET > | < UNDERSCORE >)* >
+| < NNNN : < DIGIT > < DIGIT > < DIGIT > < DIGIT > >
+| < NN : < DIGIT > < DIGIT > >
+| < COMP_OP : "<" | ">" | "=" | ">=" | "<=" | "!=" >
+| < SIGN : "+" | "-" >
+| < SEMICOLON : ";" >
 | < LEFT_PAREN : "(" >
 | < RIGHT_PAREN : ")" >
 | < COMMA : "," >
@@ -121,17 +129,9 @@ TOKEN :
 | < UNDERSCORE : "_" >
 | < ASTERISK : "*" >
 | < QUOTE : "'" >
-| < SIGN : "+" | "-" >
-| < LEGAL_IDENTIFIER : < ALPHABET > (< ALPHABET > | < UNDERSCORE >)* >
 | < DIGIT : [ "0"-"9" ] >
 | < ALPHABET : [ "a"-"z", "A"-"Z" ] >
-| < COMP_OP : "<" | ">" | "=" | ">=" | "<=" | "!=" >
-| < CHAR_STRING : < QUOTE > (< NON_QUOTE_CHARACTER >)* < QUOTE > > 
-| < INT_VALUE : (< SIGN >)? (< DIGIT >)+ >
-| < DATE_VALUE : < NNNN > "-" < NN > "-" < NN > >
 | < NON_QUOTE_CHARACTER : ~["'","\""] >
-| < NNNN : < DIGIT > < DIGIT > < DIGIT > < DIGIT > >
-| < NN : < DIGIT > < DIGIT > >
 }
 
 void command() :

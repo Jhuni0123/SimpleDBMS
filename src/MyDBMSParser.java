@@ -415,10 +415,10 @@ public class MyDBMSParser implements MyDBMSParserConstants {
 
   static final public void booleanTest() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case LEGAL_IDENTIFIER:
     case CHAR_STRING:
     case INT_VALUE:
     case DATE_VALUE:
+    case LEGAL_IDENTIFIER:
       predicate();
       break;
     case LEFT_PAREN:
@@ -665,13 +665,13 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   }
 
   static private boolean jj_3_3() {
-    if (jj_scan_token(41)) return true;
+    if (jj_scan_token(35)) return true;
     if (jj_scan_token(PERIOD)) return true;
     return false;
   }
 
   static private boolean jj_3_1() {
-    if (jj_scan_token(41)) return true;
+    if (jj_scan_token(35)) return true;
     if (jj_scan_token(PERIOD)) return true;
     return false;
   }
@@ -686,11 +686,11 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   static private boolean jj_3R_11() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(46)) {
+    if (jj_scan_token(33)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(45)) {
+    if (jj_scan_token(32)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(47)) return true;
+    if (jj_scan_token(34)) return true;
     }
     }
     return false;
@@ -702,7 +702,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   }
 
   static private boolean jj_3_4() {
-    if (jj_scan_token(41)) return true;
+    if (jj_scan_token(35)) return true;
     if (jj_scan_token(PERIOD)) return true;
     return false;
   }
@@ -711,7 +711,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_4()) jj_scanpos = xsp;
-    if (jj_scan_token(41)) return true;
+    if (jj_scan_token(35)) return true;
     return false;
   }
 
@@ -738,7 +738,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_la1_0 = new int[] {0xfe20,0xfe00,0xfe00,0x100000,0x0,0x30000000,0x1000000,0x30000000,0x0,0x0,0x400000,0x100000,0x0,0x400000,0x2000000,0x4000000,0x1000000,0x0,0x0,0x1000000,0x0,0x0,0x0,0x0,0x8000000,0x0,0x1c0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x8,0x200,0x0,0x0,0x8,0x240,0x0,0x0,0x8,0x0,0x0,0x0,0x0,0xe202,0x200,0x0,0xe200,0x2,0x8,0x8,0xe000,0xe000,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x800,0x8,0x0,0x0,0x800,0x4008,0x0,0x0,0x800,0x0,0x0,0x0,0x0,0x20f,0x8,0x0,0xf,0x200,0x800,0x800,0x7,0x7,0x0,};
    }
   static final private JJCalls[] jj_2_rtns = new JJCalls[4];
   static private boolean jj_rescan = false;
