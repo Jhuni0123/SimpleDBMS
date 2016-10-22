@@ -387,13 +387,12 @@ void booleanValueExpression() :
 {}
 {
   // if we choose booleanValueExpression() < OR > booleanTerm() , left recursion can occur(infinite loop).
-  // and when we change order like booleanTerm() < OR > booleanValueExpression , booleanTerm() is always appear at first.
-  // so we can bind it and write like below.
+  // so we can change it and write like below.
    booleanTerm()
   (
     < OR >
-    booleanValueExpression()
-  )?
+    booleanTerm()
+  )*
 }
 
 void booleanTerm() :
@@ -403,8 +402,8 @@ void booleanTerm() :
   booleanFactor()
   (
     < AND >
-    booleanTerm()
-  )?
+    booleanFactor()
+  )*
 }
 
 void booleanFactor() :

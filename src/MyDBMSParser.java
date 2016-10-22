@@ -377,27 +377,35 @@ public class MyDBMSParser implements MyDBMSParserConstants {
 
   static final public void booleanValueExpression() throws ParseException {
     booleanTerm();
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case OR:
+    label_5:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OR:
+        ;
+        break;
+      default:
+        jj_la1[14] = jj_gen;
+        break label_5;
+      }
       jj_consume_token(OR);
-      booleanValueExpression();
-      break;
-    default:
-      jj_la1[14] = jj_gen;
-      ;
+      booleanTerm();
     }
   }
 
   static final public void booleanTerm() throws ParseException {
     booleanFactor();
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case AND:
+    label_6:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case AND:
+        ;
+        break;
+      default:
+        jj_la1[15] = jj_gen;
+        break label_6;
+      }
       jj_consume_token(AND);
-      booleanTerm();
-      break;
-    default:
-      jj_la1[15] = jj_gen;
-      ;
+      booleanFactor();
     }
   }
 
@@ -521,7 +529,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   static final public void columnNameList() throws ParseException {
     jj_consume_token(LEFT_PAREN);
     columnName();
-    label_5:
+    label_7:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
@@ -529,7 +537,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         break;
       default:
         jj_la1[22] = jj_gen;
-        break label_5;
+        break label_7;
       }
       jj_consume_token(COMMA);
       columnName();
@@ -541,7 +549,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     jj_consume_token(VALUES);
     jj_consume_token(LEFT_PAREN);
     value();
-    label_6:
+    label_8:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
@@ -549,7 +557,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         break;
       default:
         jj_la1[23] = jj_gen;
-        break label_6;
+        break label_8;
       }
       jj_consume_token(COMMA);
       value();
@@ -649,18 +657,26 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  static private boolean jj_3R_8() {
+  static private boolean jj_3R_12() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_9()) {
+    if (jj_3_4()) jj_scanpos = xsp;
+    if (jj_scan_token(35)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_10() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_11()) {
     jj_scanpos = xsp;
-    if (jj_3R_10()) return true;
+    if (jj_3R_12()) return true;
     }
     return false;
   }
 
-  static private boolean jj_3R_9() {
-    if (jj_3R_11()) return true;
+  static private boolean jj_3R_11() {
+    if (jj_3R_13()) return true;
     return false;
   }
 
@@ -676,14 +692,14 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     return false;
   }
 
-  static private boolean jj_3R_7() {
-    if (jj_3R_8()) return true;
+  static private boolean jj_3R_9() {
+    if (jj_3R_10()) return true;
     if (jj_scan_token(COMP_OP)) return true;
-    if (jj_3R_8()) return true;
+    if (jj_3R_10()) return true;
     return false;
   }
 
-  static private boolean jj_3R_11() {
+  static private boolean jj_3R_13() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(33)) {
@@ -697,21 +713,13 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   }
 
   static private boolean jj_3_2() {
-    if (jj_3R_7()) return true;
+    if (jj_3R_9()) return true;
     return false;
   }
 
   static private boolean jj_3_4() {
     if (jj_scan_token(35)) return true;
     if (jj_scan_token(PERIOD)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_10() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_4()) jj_scanpos = xsp;
-    if (jj_scan_token(35)) return true;
     return false;
   }
 
