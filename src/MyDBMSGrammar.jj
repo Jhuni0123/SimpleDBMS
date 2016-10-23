@@ -29,7 +29,7 @@ public class MyDBMSParser
       {
         parser.command();
       }
-      catch (Exception e)
+      catch (Throwable e)
       {
         printMessage(PRINT_SYNTAX_ERROR);
         MyDBMSParser.ReInit(System.in);
@@ -117,21 +117,21 @@ TOKEN :
 | < INT_VALUE : (< SIGN >)? (< DIGIT >)+ >
 | < DATE_VALUE : < NNNN > "-" < NN > "-" < NN > >
 | < LEGAL_IDENTIFIER : < ALPHABET > (< ALPHABET > | < UNDERSCORE >)* >
-| < NNNN : < DIGIT > < DIGIT > < DIGIT > < DIGIT > >
-| < NN : < DIGIT > < DIGIT > >
+| < #NNNN : < DIGIT > < DIGIT > < DIGIT > < DIGIT > >
+| < #NN : < DIGIT > < DIGIT > >
 | < COMP_OP : "<" | ">" | "=" | ">=" | "<=" | "!=" >
-| < SIGN : "+" | "-" >
+| < #SIGN : "+" | "-" >
 | < SEMICOLON : ";" >
 | < LEFT_PAREN : "(" >
 | < RIGHT_PAREN : ")" >
 | < COMMA : "," >
 | < PERIOD : "." >
-| < UNDERSCORE : "_" >
+| < #UNDERSCORE : "_" >
 | < ASTERISK : "*" >
-| < QUOTE : "'" >
-| < DIGIT : [ "0"-"9" ] >
-| < ALPHABET : [ "a"-"z", "A"-"Z" ] >
-| < NON_QUOTE_CHARACTER : ~["'","\""] >
+| < #QUOTE : "'" >
+| < #DIGIT : [ "0"-"9" ] >
+| < #ALPHABET : [ "a"-"z", "A"-"Z" ] >
+| < #NON_QUOTE_CHARACTER : ["~","`","!","@","#","$","%","^","&","*","(",")","-","_","=","+","[","]","{","}","\\","|",";",":",",",".","<",">","/","?"," "] | < ALPHABET > | < DIGIT > >
 }
 
 void command() :
@@ -139,8 +139,13 @@ void command() :
 {
   queryList()
 | (
-    < EXIT >
-    < SEMICOLON >
+  	(  	  (        < EXIT >
+        < SEMICOLON >
+      )
+    | (
+        < EOF >
+      )
+    )
     {
       System.exit(0);
     }
