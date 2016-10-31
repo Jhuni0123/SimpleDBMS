@@ -100,7 +100,6 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     label_1:
     while (true) {
       q = query();
-      jj_consume_token(SEMICOLON);
       printMessage(q);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case CREATE:
@@ -164,28 +163,33 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     jj_consume_token(TABLE);
     tableName();
     tableElementList();
+    jj_consume_token(SEMICOLON);
   }
 
   static final public void dropTableQuery() throws ParseException {
     jj_consume_token(DROP);
     jj_consume_token(TABLE);
     tableName();
+    jj_consume_token(SEMICOLON);
   }
 
   static final public void descQuery() throws ParseException {
     jj_consume_token(DESC);
     tableName();
+    jj_consume_token(SEMICOLON);
   }
 
   static final public void showTablesQuery() throws ParseException {
     jj_consume_token(SHOW);
     jj_consume_token(TABLES);
+    jj_consume_token(SEMICOLON);
   }
 
   static final public void selectQuery() throws ParseException {
     jj_consume_token(SELECT);
     selectList();
     tableExpression();
+    jj_consume_token(SEMICOLON);
   }
 
   static final public void insertQuery() throws ParseException {
@@ -193,6 +197,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     jj_consume_token(INTO);
     tableName();
     insertColumnAndSource();
+    jj_consume_token(SEMICOLON);
   }
 
   static final public void deleteQuery() throws ParseException {
@@ -207,6 +212,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_la1[4] = jj_gen;
       ;
     }
+    jj_consume_token(SEMICOLON);
   }
 
   static final public void tableElementList() throws ParseException {
@@ -669,13 +675,6 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  static private boolean jj_3R_9() {
-    if (jj_3R_10()) return true;
-    if (jj_scan_token(COMP_OP)) return true;
-    if (jj_3R_10()) return true;
-    return false;
-  }
-
   static private boolean jj_3R_13() {
     Token xsp;
     xsp = jj_scanpos;
@@ -732,6 +731,13 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   static private boolean jj_3_3() {
     if (jj_scan_token(35)) return true;
     if (jj_scan_token(PERIOD)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_9() {
+    if (jj_3R_10()) return true;
+    if (jj_scan_token(COMP_OP)) return true;
+    if (jj_3R_10()) return true;
     return false;
   }
 

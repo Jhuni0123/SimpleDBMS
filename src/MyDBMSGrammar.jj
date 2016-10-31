@@ -159,7 +159,6 @@ void queryList() :
 {
   (
     q = query()
-    < SEMICOLON >
     {
       printMessage(q);
     }
@@ -214,6 +213,7 @@ void createTableQuery() :
   < CREATE > < TABLE >
   tableName()
   tableElementList()
+  < SEMICOLON >
 }
 
 void dropTableQuery() :
@@ -221,6 +221,7 @@ void dropTableQuery() :
 {
   < DROP > < TABLE >
   tableName()
+  < SEMICOLON >
 }
 
 void descQuery() :
@@ -228,12 +229,14 @@ void descQuery() :
 {
   < DESC >
   tableName()
+  < SEMICOLON >
 }
 
 void showTablesQuery() :
 {}
 {
   < SHOW > < TABLES >
+  < SEMICOLON >
 }
 
 void selectQuery() :
@@ -242,6 +245,7 @@ void selectQuery() :
   < SELECT >
   selectList()
   tableExpression()
+  < SEMICOLON >
 }
 
 void insertQuery() :
@@ -250,6 +254,7 @@ void insertQuery() :
   < INSERT > < INTO >
   tableName()
   insertColumnAndSource()
+  < SEMICOLON >
 }
 
 void deleteQuery() :
@@ -260,6 +265,7 @@ void deleteQuery() :
   (
     whereClause()
   )?
+  < SEMICOLON >
 }
 
 void tableElementList() :
