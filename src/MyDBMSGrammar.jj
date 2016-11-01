@@ -6,6 +6,15 @@ options
 }
 
 PARSER_BEGIN(MyDBMSParser)
+// imports
+import java.io.File;
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.je.Cursor;
+
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
 
 public class MyDBMSParser
 {
@@ -20,6 +29,23 @@ public class MyDBMSParser
   
   public static void main(String args[]) throws ParseException
   {
+    // Environment & Database define
+    Environment myDbEnvironment = null;
+    Database myDatabase = null;
+
+    /* OPENING DB */
+    // Open or Create Database Environment
+    EnvironmentConfig envConfig = new EnvironmentConfig();
+    envConfig.setAllowCreate(true);
+    myDbEnvironment = new Environment(new File("db/"), envConfig);
+    
+    // Open or Create Database
+    DatabaseConfig dbConfig = new DatabaseConfig();
+    dbConfig.setAllowCreate(true);
+    dbConfig.setSortedDuplicates(true);
+    myDatabase = myDbEnvironment.openDatabase(null, "myDatabase", dbConfig);
+
+    
     MyDBMSParser parser = new MyDBMSParser(System.in);
     System.out.print("DB_2015-18380> ");
   
@@ -28,6 +54,7 @@ public class MyDBMSParser
       try
       {
         parser.command();
+        break;
       }
       catch (Throwable e)
       {
@@ -35,6 +62,10 @@ public class MyDBMSParser
         MyDBMSParser.ReInit(System.in);
       }
     }
+	
+    /* CLOSING DB */
+    if(myDatabase != null) myDatabase.close();
+    if(myDbEnvironment != null) myDbEnvironment.close();
   }
 
   public static void printMessage(int q)
@@ -138,18 +169,13 @@ void command() :
 {}
 {
   queryList()
-| (
-  	(  	  (        < EXIT >
-        < SEMICOLON >
-      )
-    | (
-        < EOF >
-      )
+  (    (      < EXIT >
+      < SEMICOLON >
     )
-    {
-      System.exit(0);
-    }
-  ) 
+  | (
+      < EOF >
+    )
+  )
 }
 
 void queryList() :
@@ -162,7 +188,7 @@ void queryList() :
     {
       printMessage(q);
     }
-  )+
+  )*
 }
 
 int query() :
