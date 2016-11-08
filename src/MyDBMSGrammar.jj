@@ -6,15 +6,9 @@ options
 }
 
 PARSER_BEGIN(MyDBMSParser)
-// imports
-import java.io.File;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.DatabaseConfig;
-import com.sleepycat.je.Cursor;
 
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
+import java.util.ArrayList;
+import JnDB.*;
 
 public class MyDBMSParser
 {
@@ -26,25 +20,14 @@ public class MyDBMSParser
   public static final int PRINT_SELECT = 5;
   public static final int PRINT_INSERT = 6;
   public static final int PRINT_DELETE = 7;
+
+  public static JnDatabase jdb;
   
   public static void main(String args[]) throws ParseException
   {
-    // Environment & Database define
-    Environment myDbEnvironment = null;
-    Database myDatabase = null;
+    jdb = new JnDatabase();
 
-    /* OPENING DB */
-    // Open or Create Database Environment
-    EnvironmentConfig envConfig = new EnvironmentConfig();
-    envConfig.setAllowCreate(true);
-    myDbEnvironment = new Environment(new File("db/"), envConfig);
-    
-    // Open or Create Database
-    DatabaseConfig dbConfig = new DatabaseConfig();
-    dbConfig.setAllowCreate(true);
-    dbConfig.setSortedDuplicates(true);
-    myDatabase = myDbEnvironment.openDatabase(null, "myDatabase", dbConfig);
-
+    jdb.open("db/");
     
     MyDBMSParser parser = new MyDBMSParser(System.in);
     System.out.print("DB_2015-18380> ");
@@ -62,10 +45,8 @@ public class MyDBMSParser
         MyDBMSParser.ReInit(System.in);
       }
     }
-	
-    /* CLOSING DB */
-    if(myDatabase != null) myDatabase.close();
-    if(myDbEnvironment != null) myDbEnvironment.close();
+
+	jdb.close();
   }
 
   public static void printMessage(int q)
@@ -234,28 +215,44 @@ int query() :
 }
 
 void createTableQuery() :
-{}
+{
+  String tName;
+  ArrayList eList;
+}
 {
   < CREATE > < TABLE >
-  tableName()
+  tName = tableName()
   tableElementList()
   < SEMICOLON >
+  {
+    jdb.createTable(tName);
+  }
 }
 
 void dropTableQuery() :
-{}
+{
+  String tName;
+}
 {
   < DROP > < TABLE >
-  tableName()
+  tName = tableName()
   < SEMICOLON >
+  {
+    jdb.dropTable(tName);
+  }
 }
 
 void descQuery() :
-{}
+{
+  String tName;
+}
 {
   < DESC >
-  tableName()
+  tName = tableName()
   < SEMICOLON >
+  {
+    jdb.desc(tName);
+  }
 }
 
 void showTablesQuery() :
@@ -263,6 +260,9 @@ void showTablesQuery() :
 {
   < SHOW > < TABLES >
   < SEMICOLON >
+  {
+    jdb.showTables();
+  }
 }
 
 void selectQuery() :
@@ -295,7 +295,9 @@ void deleteQuery() :
 }
 
 void tableElementList() :
-{}
+{
+	ArrayList list;
+}
 {
   < LEFT_PAREN >
   tableElement()
@@ -579,14 +581,24 @@ void dataType() :
 | < DATE >
 }
 
-void tableName() :
-{}
+String tableName() :
 {
-  < LEGAL_IDENTIFIER >
+  Token l_id;
+}
+{
+  l_id = < LEGAL_IDENTIFIER >
+  {
+    return l_id.toString();
+  }
 }
 
-void columnName() :
-{}
+String columnName() :
 {
-  < LEGAL_IDENTIFIER >
+	Token l_id;
+}
+{
+  l_id = < LEGAL_IDENTIFIER >
+  {
+    return l_id.toString();
+  }
 }
