@@ -9,7 +9,6 @@ PARSER_BEGIN(MyDBMSParser)
 
 import java.util.ArrayList;
 import jnDB.*;
-import jnDB.exception.*;
 import jnDB.type.*;
 
 public class MyDBMSParser
@@ -169,7 +168,7 @@ void queryList() :
 {
   (
     q = query()
-    { printMessage(q); }
+    { /*printMessage(q);*/ }
   )*
 }
 
@@ -225,8 +224,7 @@ void createTableQuery() :
   tableElementList(schema)
   < SEMICOLON >
   {
-    jdb.createTable(tName, schema);
-    System.out.println("'" + tName + "' table is created");
+    jdb.createTable(schema);
   }
 }
 
@@ -236,7 +234,9 @@ void dropTableQuery() :
   < DROP > < TABLE >
   tName = tableName()
   < SEMICOLON >
-  { jdb.dropTable(tName); }
+  {
+    jdb.dropTable(tName);
+  }
 }
 
 void descQuery() :

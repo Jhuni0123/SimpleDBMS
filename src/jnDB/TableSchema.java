@@ -7,7 +7,7 @@ import jnDB.exception.*;
 import jnDB.type.Type;
 
 public class TableSchema {
-	String name;
+	private String name;
 	HashMap<String, Column> columns;
 	HashSet<String> publicKey;
 	
@@ -17,8 +17,9 @@ public class TableSchema {
 		publicKey = new HashSet<String>();
 	}
 	
-	public void addColumn(String cName, Type t, boolean isNotnull) throws DuplicateColumnDefError {
+	public void addColumn(String cName, Type t, boolean isNotNull) throws DuplicateColumnDefError {
 		if(columns.get(cName) != null)throw new DuplicateColumnDefError();
+		columns.put(cName, new Column(cName, t, isNotNull));
 	}
 	
 	public void setPrimaryKey(ArrayList<String> cnList) throws DuplicatePrimaryKeyDefError{
@@ -28,8 +29,13 @@ public class TableSchema {
 		}
 	}
 	
-	public void setReferentialKey(ArrayList<String> cnList, String tName, ArrayList<String> targetList){
+	public void setReferentialKey(ArrayList<String> cnList, String tableName, ArrayList<String> targetList){
 		
 	}
 	
+	public void checkValidity(){
+		
+	}
+	
+	public String getName(){ return name; }
 }

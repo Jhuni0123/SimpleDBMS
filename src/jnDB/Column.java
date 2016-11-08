@@ -3,15 +3,26 @@ package jnDB;
 import jnDB.type.*;
 
 public class Column {
-	String name;
-	Type type;
-	boolean isNotNull, isPrimaryKey, isForeignKey;
+	private String name;
+	private Type type;
+	private boolean notNull, primaryKey, foreignKey;
+	private String refTableName, refColName;
 	
 	public Column(String n, Type t, boolean isnn){
 		name = n;
 		type = t;
-		isNotNull = isnn;
-		isPrimaryKey = false;
-		isForeignKey = false;
+		notNull = isnn;
+		primaryKey = false;
+		foreignKey = false;
 	}
+	
+	public void setForeignKey(String tName, String cName){
+		foreignKey = true;
+		refTableName = tName;
+		refColName = cName;
+	}
+	
+	public boolean isNotNull(){ return notNull; }
+	public boolean isPrimaryKey(){ return primaryKey; }
+	public boolean isForeignKey(){ return foreignKey; }
 }
