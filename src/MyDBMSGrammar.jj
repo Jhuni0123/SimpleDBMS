@@ -150,25 +150,17 @@ void command() :
 {}
 {
   queryList()
-  (    (      < EXIT >
-      < SEMICOLON >
-    )
-  | (
-      < EOF >
-    )
+  (    ( < EXIT > < SEMICOLON > )
+  | ( < EOF > )
   )
 }
 
 void queryList() :
-{
-  int q;
-}
+{ int q; }
 {
   (
     q = query()
-    {
-      printMessage(q);
-    }
+    { printMessage(q); }
   )*
 }
 
@@ -208,51 +200,40 @@ int query() :
     )
   )
   (
-    {
-      return q;
-    }
+    { return q; }
   )
 }
 
 void createTableQuery() :
 {
   String tName;
-  ArrayList eList;
+  TableSchema schema;
 }
 {
   < CREATE > < TABLE >
   tName = tableName()
-  tableElementList()
+  { schema = new TableSchema(tName); }
+  tableElementList(schema)
   < SEMICOLON >
-  {
-    jdb.createTable(tName);
-  }
+  { jdb.createTable(tName, schema); }
 }
 
 void dropTableQuery() :
-{
-  String tName;
-}
+{ String tName; }
 {
   < DROP > < TABLE >
   tName = tableName()
   < SEMICOLON >
-  {
-    jdb.dropTable(tName);
-  }
+  { jdb.dropTable(tName); }
 }
 
 void descQuery() :
-{
-  String tName;
-}
+{ String tName; }
 {
   < DESC >
   tName = tableName()
   < SEMICOLON >
-  {
-    jdb.desc(tName);
-  }
+  { jdb.desc(tName); }
 }
 
 void showTablesQuery() :
@@ -260,9 +241,7 @@ void showTablesQuery() :
 {
   < SHOW > < TABLES >
   < SEMICOLON >
-  {
-    jdb.showTables();
-  }
+  { jdb.showTables(); }
 }
 
 void selectQuery() :
@@ -288,66 +267,72 @@ void deleteQuery() :
 {
   < DELETE > < FROM >
   tableName()
-  (
-    whereClause()
-  )?
+  ( whereClause() )?
   < SEMICOLON >
 }
 
-void tableElementList() :
-{
-	ArrayList list;
-}
+void tableElementList(TableSchema schema) :
+{}
 {
   < LEFT_PAREN >
-  tableElement()
+  tableElement(schema)
   (
     < COMMA >
-    tableElement()
+    tableElement(schema)
   )*
   < RIGHT_PAREN >
 }
 
-void tableElement() :
-{
-}
-{
-  columnDefinition()
-| tableConstraintDefinition()
-}
-
-void columnDefinition() :
+void tableElement(TableSchema schema) :
 {}
 {
-  columnName()
-  dataType()
+  columnDefinition(schema)
+| tableConstraintDefinition(schema)
+}
+
+void columnDefinition(TableSchema schema) :
+{
+  String cName;
+  Type type;
+  boolean isNotNull = false;
+}
+{
+  cName = columnName()
+  type = dataType()
   (
     < NOT > < NULL >
+    { isNotNull = true; }
   )?
+  { schema.addColumn(cName, type, isNotNull); }
 }
 
-void tableConstraintDefinition() :
+void tableConstraintDefinition(TableSchema schema) :
 {}
 {
-  primaryKeyConstraint()
-| referentialConstraint()
+  primaryKeyConstraint(schema)
+| referentialConstraint(schema)
 }
 
-void primaryKeyConstraint() :
-{}
+void primaryKeyConstraint(TableSchema schema) :
+{ ArrayList<String> cnList; }
 {
   < PRIMARY > < KEY >
-  columnNameList()
+  cnList = columnNameList()
+  { schema.setPrimaryKey(cnList); }
 }
 
-void referentialConstraint() :
-{}
+void referentialConstraint(TableSchema schema) :
+{
+  String tName;
+  ArrayList<String> cnList1,cnList2;
+}
 {
   < FOREIGN > < KEY >
-  columnNameList()
+  cnList1 = columnNameList()
   < REFERENCES >
-  tableName()
-  columnNameList()
+  tName = tableName()
+  cnList2 = columnNameList()
+  { schema.setReferentialKey(cnList1, tName, cnList2); }
 }
 
 
@@ -385,9 +370,7 @@ void tableExpression() :
 {}
 {
   fromClause()
-  (
-    whereClause()
-  )?
+  ( whereClause() )?
 }
 
 void fromClause() :
@@ -437,7 +420,6 @@ void booleanValueExpression() :
 void booleanTerm() :
 {} 
 {
-  // same as line 391.
   booleanFactor()
   (
     < AND >
@@ -448,8 +430,7 @@ void booleanTerm() :
 void booleanFactor() :
 {}
 {
-  (    < NOT >
-  )?
+  ( < NOT > )?
   booleanTest()
 }
 
@@ -482,7 +463,7 @@ void nullPredicate() :
 {}
 {
   (
-    LOOKAHEAD(2) // same as line 332.
+    LOOKAHEAD(2)
     tableName()
     < PERIOD >
   )?
@@ -494,8 +475,7 @@ void nullOperation() :
 {}
 {
   < IS >
-  (    < NOT >
-  )?
+  ( < NOT > )?
   < NULL >
 }
 
@@ -513,7 +493,7 @@ void compOperand() :
   comparableValue()
 | (
     (
-      LOOKAHEAD(2) // same as line 332.
+      LOOKAHEAD(2)
       tableName()
       < PERIOD >
     )?
@@ -529,16 +509,22 @@ void insertColumnAndSource() :
   valueList()
 }
 
-void columnNameList() :
-{}
+ArrayList<String> columnNameList() :
+{
+  ArrayList<String> cnList = new ArrayList<String>();
+  String cName;
+}
 {
   < LEFT_PAREN >
-  columnName()
+  cName = columnName()
+  { cnList.add(cName); }
   (
     < COMMA >
-    columnName()
+    cName = columnName()
+    { cnList.add(cName); }
   )*
   < RIGHT_PAREN >
+  { return cnList; }
 }
 
 void valueList() :
@@ -568,37 +554,34 @@ void comparableValue() :
 | < DATE_VALUE >
 }
 
-void dataType() :
-{}
+Type dataType() :
 {
-  < INT >
+  Token t,l;
+  int len = -1;
+}
+{
+  t = < INT >
 | (
-    < CHAR >
+    t = < CHAR >
     < LEFT_PAREN >
-    < INT_VALUE >
+    l = < INT_VALUE >
     < RIGHT_PAREN >
+    { len = Integer.parseInt(l.toString()); }
   )
-| < DATE >
+| t = < DATE >
+{ return new Type(t.toString(), len); }
 }
 
 String tableName() :
-{
-  Token l_id;
-}
+{ Token l_id; }
 {
   l_id = < LEGAL_IDENTIFIER >
-  {
-    return l_id.toString();
-  }
+  { return l_id.toString(); }
 }
 
 String columnName() :
-{
-	Token l_id;
-}
+{ Token l_id; }
 {
   l_id = < LEGAL_IDENTIFIER >
-  {
-    return l_id.toString();
-  }
+  { return l_id.toString(); }
 }

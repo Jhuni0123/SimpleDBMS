@@ -36,7 +36,7 @@ public class JnDatabase {
         if(myDbEnvironment != null) myDbEnvironment.close();
     }
     
-    public void createTable(String tName){
+    public void createTable(String tName, TableSchema schema){
     	System.out.println("Create table '" + tName + "' requested" );
     }
     

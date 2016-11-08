@@ -154,13 +154,14 @@ public class MyDBMSParser implements MyDBMSParserConstants {
 
   static final public void createTableQuery() throws ParseException {
   String tName;
-  ArrayList eList;
+  TableSchema schema;
     jj_consume_token(CREATE);
     jj_consume_token(TABLE);
     tName = tableName();
-    tableElementList();
+    schema = new TableSchema(tName);
+    tableElementList(schema);
     jj_consume_token(SEMICOLON);
-    jdb.createTable(tName);
+    jdb.createTable(tName, schema);
   }
 
   static final public void dropTableQuery() throws ParseException {
@@ -217,10 +218,9 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     jj_consume_token(SEMICOLON);
   }
 
-  static final public void tableElementList() throws ParseException {
-        ArrayList list;
+  static final public void tableElementList(TableSchema schema) throws ParseException {
     jj_consume_token(LEFT_PAREN);
-    tableElement();
+    tableElement(schema);
     label_2:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -232,19 +232,19 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         break label_2;
       }
       jj_consume_token(COMMA);
-      tableElement();
+      tableElement(schema);
     }
     jj_consume_token(RIGHT_PAREN);
   }
 
-  static final public void tableElement() throws ParseException {
+  static final public void tableElement(TableSchema schema) throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case LEGAL_IDENTIFIER:
-      columnDefinition();
+      columnDefinition(schema);
       break;
     case PRIMARY:
     case FOREIGN:
-      tableConstraintDefinition();
+      tableConstraintDefinition(schema);
       break;
     default:
       jj_la1[5] = jj_gen;
@@ -253,27 +253,32 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     }
   }
 
-  static final public void columnDefinition() throws ParseException {
-    columnName();
-    dataType();
+  static final public void columnDefinition(TableSchema schema) throws ParseException {
+  String cName;
+  Type type;
+  boolean isNotNull = false;
+    cName = columnName();
+    type = dataType();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case NOT:
       jj_consume_token(NOT);
       jj_consume_token(NULL);
+      isNotNull = true;
       break;
     default:
       jj_la1[6] = jj_gen;
       ;
     }
+    schema.addColumn(cName, type, isNotNull);
   }
 
-  static final public void tableConstraintDefinition() throws ParseException {
+  static final public void tableConstraintDefinition(TableSchema schema) throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case PRIMARY:
-      primaryKeyConstraint();
+      primaryKeyConstraint(schema);
       break;
     case FOREIGN:
-      referentialConstraint();
+      referentialConstraint(schema);
       break;
     default:
       jj_la1[7] = jj_gen;
@@ -282,19 +287,24 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     }
   }
 
-  static final public void primaryKeyConstraint() throws ParseException {
+  static final public void primaryKeyConstraint(TableSchema schema) throws ParseException {
+  ArrayList<String> cnList;
     jj_consume_token(PRIMARY);
     jj_consume_token(KEY);
-    columnNameList();
+    cnList = columnNameList();
+    schema.setPrimaryKey(cnList);
   }
 
-  static final public void referentialConstraint() throws ParseException {
+  static final public void referentialConstraint(TableSchema schema) throws ParseException {
+  String tName;
+  ArrayList<String> cnList1,cnList2;
     jj_consume_token(FOREIGN);
     jj_consume_token(KEY);
-    columnNameList();
+    cnList1 = columnNameList();
     jj_consume_token(REFERENCES);
-    tableName();
-    columnNameList();
+    tName = tableName();
+    cnList2 = columnNameList();
+    schema.setReferentialKey(cnList1, tName, cnList2);
   }
 
   static final public void selectList() throws ParseException {
@@ -547,9 +557,12 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     valueList();
   }
 
-  static final public void columnNameList() throws ParseException {
+  static final public ArrayList<String> columnNameList() throws ParseException {
+  ArrayList<String> cnList = new ArrayList<String>();
+  String cName;
     jj_consume_token(LEFT_PAREN);
-    columnName();
+    cName = columnName();
+    cnList.add(cName);
     label_7:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -561,9 +574,12 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         break label_7;
       }
       jj_consume_token(COMMA);
-      columnName();
+      cName = columnName();
+      cnList.add(cName);
     }
     jj_consume_token(RIGHT_PAREN);
+    {if (true) return cnList;}
+    throw new Error("Missing return statement in function");
   }
 
   static final public void valueList() throws ParseException {
@@ -621,25 +637,30 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     }
   }
 
-  static final public void dataType() throws ParseException {
+  static final public Type dataType() throws ParseException {
+  Token t,l;
+  int len = -1;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case INT:
-      jj_consume_token(INT);
+      t = jj_consume_token(INT);
       break;
     case CHAR:
-      jj_consume_token(CHAR);
+      t = jj_consume_token(CHAR);
       jj_consume_token(LEFT_PAREN);
-      jj_consume_token(INT_VALUE);
+      l = jj_consume_token(INT_VALUE);
       jj_consume_token(RIGHT_PAREN);
+      len = Integer.parseInt(l.toString());
       break;
     case DATE:
-      jj_consume_token(DATE);
+      t = jj_consume_token(DATE);
+  {if (true) return new Type(t.toString(), len);}
       break;
     default:
       jj_la1[26] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
   static final public String tableName() throws ParseException {
@@ -650,7 +671,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   }
 
   static final public String columnName() throws ParseException {
-        Token l_id;
+  Token l_id;
     l_id = jj_consume_token(LEGAL_IDENTIFIER);
     {if (true) return l_id.toString();}
     throw new Error("Missing return statement in function");
@@ -684,6 +705,17 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     finally { jj_save(3, xla); }
   }
 
+  static private boolean jj_3_1() {
+    if (jj_3R_9()) return true;
+    if (jj_scan_token(PERIOD)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_15() {
+    if (jj_scan_token(LEGAL_IDENTIFIER)) return true;
+    return false;
+  }
+
   static private boolean jj_3R_13() {
     Token xsp;
     xsp = jj_scanpos;
@@ -707,27 +739,14 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     return false;
   }
 
-  static private boolean jj_3R_15() {
-    if (jj_scan_token(LEGAL_IDENTIFIER)) return true;
-    return false;
-  }
-
   static private boolean jj_3_3() {
     if (jj_3R_9()) return true;
     if (jj_scan_token(PERIOD)) return true;
     return false;
   }
 
-  static private boolean jj_3_1() {
-    if (jj_3R_9()) return true;
-    if (jj_scan_token(PERIOD)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_10() {
-    if (jj_3R_11()) return true;
-    if (jj_scan_token(COMP_OP)) return true;
-    if (jj_3R_11()) return true;
+  static private boolean jj_3R_9() {
+    if (jj_scan_token(LEGAL_IDENTIFIER)) return true;
     return false;
   }
 
@@ -744,8 +763,10 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     return false;
   }
 
-  static private boolean jj_3R_9() {
-    if (jj_scan_token(LEGAL_IDENTIFIER)) return true;
+  static private boolean jj_3R_10() {
+    if (jj_3R_11()) return true;
+    if (jj_scan_token(COMP_OP)) return true;
+    if (jj_3R_11()) return true;
     return false;
   }
 
