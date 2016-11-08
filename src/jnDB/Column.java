@@ -2,7 +2,7 @@ package jnDB;
 
 import jnDB.type.*;
 
-public class Column {
+public class Column implements java.io.Serializable {
 	private String name;
 	private Type type;
 	private boolean notNull, primaryKey, foreignKey;
@@ -22,6 +22,10 @@ public class Column {
 		refColName = cName;
 	}
 	
+	@Override
+	public String toString(){
+		return String.format("%-20s%-15s%-15s%-15s", name, type.toString(), notNull?"N":"Y", primaryKey?foreignKey?"PRI/FOR":"PRI":foreignKey?"FOR":"");
+	}
 	public boolean isNotNull(){ return notNull; }
 	public boolean isPrimaryKey(){ return primaryKey; }
 	public boolean isForeignKey(){ return foreignKey; }

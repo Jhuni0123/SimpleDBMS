@@ -1,6 +1,6 @@
 package jnDB.type;
 
-public class Type{	
+public class Type implements java.io.Serializable {	
 	public Type(){}
 	
 	@Override

@@ -8,4 +8,9 @@ public class CharType extends Type {
 		if(l==0)throw new CharLengthError();
 		len = l;
 	}
+	
+	@Override
+	public String toString(){
+		return "char(" + Integer.toString(len) + ")";
+	}
 }

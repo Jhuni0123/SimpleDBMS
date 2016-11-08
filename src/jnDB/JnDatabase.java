@@ -17,6 +17,7 @@ import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
+import com.sleepycat.je.rep.stream.Protocol.StartStream;
 
 import jnDB.exception.TableExistenceError;
 
@@ -24,6 +25,7 @@ public class JnDatabase {
 	public static final String CreateTableSuccess(String tableName) { return "'" + tableName + "' table is created"; }
 	public static final String DropSuccess(String tableName) { return "'" + tableName + "' table is droped"; }
 	public static final String NO_SUCH_TABLE = "No such table";
+	public static final String SHOW_TABLES_NO_TABLE = "There is no table";
 	public static final String PROMPT = "DB_2015-18380> ";
 	Environment myDbEnvironment;
     Database myDatabase;
@@ -75,7 +77,7 @@ public class JnDatabase {
     		cursor.close();
     	}
     	catch (Exception e){
-    		
+    		if(cursor != null) cursor.close();
     	}
     }
     
@@ -160,7 +162,15 @@ public class JnDatabase {
     }
     
     public void desc(String tName){
-    	
+    	Table table = getTable(tName);
+    	if(table == null){
+    		printMessage(NO_SUCH_TABLE);
+    		return;
+    	}
+    	System.out.println("-------------------------------------------------");
+    	table.printAll();
+    	System.out.println("-------------------------------------------------");
+    	System.out.print(PROMPT);
     }
     
     public void showTables(){
@@ -171,7 +181,7 @@ public class JnDatabase {
     	try{
     		cursor = myDatabase.openCursor(null, null);
     		if(cursor.getFirst(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.NOTFOUND) {
-    			printMessage(NO_SUCH_TABLE);
+    			printMessage(SHOW_TABLES_NO_TABLE);
     			cursor.close();
     			return;
     		}
