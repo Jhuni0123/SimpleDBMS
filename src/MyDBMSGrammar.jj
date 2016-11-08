@@ -560,16 +560,18 @@ Type dataType() :
   int len = -1;
 }
 {
-  t = < INT >
-| (
-    t = < CHAR >
-    < LEFT_PAREN >
-    l = < INT_VALUE >
-    < RIGHT_PAREN >
-    { len = Integer.parseInt(l.toString()); }
+  (
+    t = < INT >
+  | (
+      t = < CHAR >
+      < LEFT_PAREN >
+      l = < INT_VALUE >
+      < RIGHT_PAREN >
+      { len = Integer.parseInt(l.toString()); }
+    )
+  | t = < DATE >
   )
-| t = < DATE >
-{ return new Type(t.toString(), len); }
+  ( { return new Type(t.toString(), len); } )
 }
 
 String tableName() :

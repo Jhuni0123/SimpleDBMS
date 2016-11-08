@@ -649,17 +649,17 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       jj_consume_token(LEFT_PAREN);
       l = jj_consume_token(INT_VALUE);
       jj_consume_token(RIGHT_PAREN);
-      len = Integer.parseInt(l.toString());
+        len = Integer.parseInt(l.toString());
       break;
     case DATE:
       t = jj_consume_token(DATE);
-  {if (true) return new Type(t.toString(), len);}
       break;
     default:
       jj_la1[26] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+      {if (true) return new Type(t.toString(), len);}
     throw new Error("Missing return statement in function");
   }
 
@@ -705,14 +705,14 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  static private boolean jj_3_1() {
-    if (jj_3R_9()) return true;
-    if (jj_scan_token(PERIOD)) return true;
+  static private boolean jj_3R_15() {
+    if (jj_scan_token(LEGAL_IDENTIFIER)) return true;
     return false;
   }
 
-  static private boolean jj_3R_15() {
-    if (jj_scan_token(LEGAL_IDENTIFIER)) return true;
+  static private boolean jj_3_1() {
+    if (jj_3R_9()) return true;
+    if (jj_scan_token(PERIOD)) return true;
     return false;
   }
 
