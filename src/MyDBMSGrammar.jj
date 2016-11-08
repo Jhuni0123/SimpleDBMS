@@ -8,7 +8,9 @@ options
 PARSER_BEGIN(MyDBMSParser)
 
 import java.util.ArrayList;
-import JnDB.*;
+import jnDB.*;
+import jnDB.exception.*;
+import jnDB.type.*;
 
 public class MyDBMSParser
 {
@@ -20,7 +22,7 @@ public class MyDBMSParser
   public static final int PRINT_SELECT = 5;
   public static final int PRINT_INSERT = 6;
   public static final int PRINT_DELETE = 7;
-
+  public static final String PROMPT = "DB_2015-18380> ";
   public static JnDatabase jdb;
   
   public static void main(String args[]) throws ParseException
@@ -30,18 +32,20 @@ public class MyDBMSParser
     jdb.open("db/");
     
     MyDBMSParser parser = new MyDBMSParser(System.in);
-    System.out.print("DB_2015-18380> ");
+    System.out.print(PROMPT);
   
-    while (true)
-    {
-      try
-      {
+    while (true){
+      try {
         parser.command();
         break;
       }
-      catch (Throwable e)
-      {
+      catch (RuntimeException e) {
+        printMessage(e.getMessage());
+      }
+      catch (Throwable e) {
         printMessage(PRINT_SYNTAX_ERROR);
+      }
+      finally {
         MyDBMSParser.ReInit(System.in);
       }
     }
@@ -78,7 +82,12 @@ public class MyDBMSParser
       	System.out.println("\'DELETE\' requested");
       	break;
     }
-    System.out.print("DB_2015-18380> ");
+    System.out.print(PROMPT);
+  }
+
+  public static void printMessage(String s) {
+    System.out.println(s);
+    System.out.print(PROMPT);
   }
 }
 
@@ -215,7 +224,10 @@ void createTableQuery() :
   { schema = new TableSchema(tName); }
   tableElementList(schema)
   < SEMICOLON >
-  { jdb.createTable(tName, schema); }
+  {
+    jdb.createTable(tName, schema);
+    System.out.println("'" + tName + "' table is created");
+  }
 }
 
 void dropTableQuery() :
@@ -556,22 +568,28 @@ void comparableValue() :
 
 Type dataType() :
 {
-  Token t,l;
-  int len = -1;
+  Token l;
+  Type type;
 }
 {
   (
-    t = < INT >
+    (
+      < INT >
+      { type = new IntType(); }
+    )
   | (
-      t = < CHAR >
+      < CHAR >
       < LEFT_PAREN >
       l = < INT_VALUE >
       < RIGHT_PAREN >
-      { len = Integer.parseInt(l.toString()); }
+      { type = new CharType(Integer.parseInt(l.toString())); }
     )
-  | t = < DATE >
+  | (
+      < DATE >
+      { type = new DateType(); }
+    )
   )
-  ( { return new Type(t.toString(), len); } )
+  ( { return type; } )
 }
 
 String tableName() :

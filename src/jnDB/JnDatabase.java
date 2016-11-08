@@ -1,4 +1,4 @@
-package JnDB;
+package jnDB;
 
 import java.io.File;
 import com.sleepycat.je.Database;
@@ -37,7 +37,7 @@ public class JnDatabase {
     }
     
     public void createTable(String tName, TableSchema schema){
-    	System.out.println("Create table '" + tName + "' requested" );
+    	
     }
     
     public void dropTable(String tName){
@@ -45,7 +45,7 @@ public class JnDatabase {
     }
     
     public void desc(String tName){
-    	System.out.println("Desc '" + tName + "' requested" );    	
+    	System.out.println("Desc '" + tName + "' requested" );
     }
     
     public void showTables(){
