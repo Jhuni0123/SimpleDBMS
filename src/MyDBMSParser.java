@@ -4,22 +4,16 @@ import jnDB.*;
 import jnDB.type.*;
 
 public class MyDBMSParser implements MyDBMSParserConstants {
-  public static final int PRINT_SYNTAX_ERROR = 0;
-  public static final int PRINT_CREATE_TABLE = 1;
-  public static final int PRINT_DROP_TABLE = 2;
-  public static final int PRINT_DESC = 3;
-  public static final int PRINT_SHOW_TABLES = 4;
-  public static final int PRINT_SELECT = 5;
-  public static final int PRINT_INSERT = 6;
-  public static final int PRINT_DELETE = 7;
+  public static final String SYNTAX_ERROR = "Syntax error";
   public static final String PROMPT = "DB_2015-18380> ";
+
   public static JnDatabase jdb;
 
   public static void main(String args[]) throws ParseException
   {
     jdb = new JnDatabase();
 
-    jdb.open("db/");
+    jdb.open("db/", "myDatabase");
 
     MyDBMSParser parser = new MyDBMSParser(System.in);
     System.out.print(PROMPT);
@@ -33,7 +27,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         printMessage(e.getMessage());
       }
       catch (Throwable e) {
-        printMessage(PRINT_SYNTAX_ERROR);
+        printMessage(SYNTAX_ERROR);
       }
       finally {
         MyDBMSParser.ReInit(System.in);
@@ -41,38 +35,6 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     }
 
         jdb.close();
-  }
-
-  public static void printMessage(int q)
-  {
-    switch(q)
-    {
-      case PRINT_SYNTAX_ERROR:
-        System.out.println("Syntax error");
-        break;
-      case PRINT_CREATE_TABLE:
-        System.out.println("\u005c'CREATE TABLE\u005c' requested");
-        break;
-      case PRINT_DROP_TABLE:
-        System.out.println("\u005c'DROP TABLE\u005c' requested");
-        break;
-      case PRINT_DESC:
-        System.out.println("\u005c'DESC\u005c' requested");
-        break;
-      case PRINT_SHOW_TABLES:
-        System.out.println("\u005c'SHOW TABLES\u005c' requested");
-        break;
-      case PRINT_SELECT:
-        System.out.println("\u005c'SELECT\u005c' requested");
-        break;
-      case PRINT_INSERT:
-        System.out.println("\u005c'INSERT\u005c' requested");
-        break;
-      case PRINT_DELETE:
-        System.out.println("\u005c'DELETE\u005c' requested");
-        break;
-    }
-    System.out.print(PROMPT);
   }
 
   public static void printMessage(String s) {
@@ -98,7 +60,6 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   }
 
   static final public void queryList() throws ParseException {
-  int q;
     label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -115,49 +76,39 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         jj_la1[1] = jj_gen;
         break label_1;
       }
-      q = query();
-
+      query();
+      System.out.print(PROMPT);
     }
   }
 
-  static final public int query() throws ParseException {
-  int q;
+  static final public void query() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case CREATE:
       createTableQuery();
-        q = PRINT_CREATE_TABLE;
       break;
     case DROP:
       dropTableQuery();
-        q = PRINT_DROP_TABLE;
       break;
     case DESC:
       descQuery();
-        q = PRINT_DESC;
       break;
     case SHOW:
       showTablesQuery();
-        q = PRINT_SHOW_TABLES;
       break;
     case SELECT:
       selectQuery();
-        q = PRINT_SELECT;
       break;
     case INSERT:
       insertQuery();
-        q = PRINT_INSERT;
       break;
     case DELETE:
       deleteQuery();
-        q = PRINT_DELETE;
       break;
     default:
       jj_la1[2] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-      {if (true) return q;}
-    throw new Error("Missing return statement in function");
   }
 
   static final public void createTableQuery() throws ParseException {
@@ -678,14 +629,14 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   static final public String tableName() throws ParseException {
   Token l_id;
     l_id = jj_consume_token(LEGAL_IDENTIFIER);
-    {if (true) return l_id.toString();}
+    {if (true) return l_id.toString().toLowerCase();}
     throw new Error("Missing return statement in function");
   }
 
   static final public String columnName() throws ParseException {
   Token l_id;
     l_id = jj_consume_token(LEGAL_IDENTIFIER);
-    {if (true) return l_id.toString();}
+    {if (true) return l_id.toString().toLowerCase();}
     throw new Error("Missing return statement in function");
   }
 

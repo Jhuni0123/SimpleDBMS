@@ -30,7 +30,6 @@ public class JnDatabase {
 	public static final String DropSuccess(String tableName) { return "'" + tableName + "' table is droped"; }
 	public static final String NO_SUCH_TABLE = "No such table";
 	public static final String SHOW_TABLES_NO_TABLE = "There is no table";
-	public static final String PROMPT = "DB_2015-18380> ";
 	Environment myDbEnvironment;
     Database myDatabase;
     
@@ -39,7 +38,7 @@ public class JnDatabase {
     	myDatabase = null;
     }
     
-    public void open(String locate){
+    public void open(String locate, String name){
     	// Open or Create Database Environment
         EnvironmentConfig envConfig = new EnvironmentConfig();
         envConfig.setAllowCreate(true);
@@ -49,7 +48,7 @@ public class JnDatabase {
         DatabaseConfig dbConfig = new DatabaseConfig();
         dbConfig.setAllowCreate(true);
         //dbConfig.setSortedDuplicates(true);
-        myDatabase = myDbEnvironment.openDatabase(null, "myDatabase", dbConfig);
+        myDatabase = myDbEnvironment.openDatabase(null, name, dbConfig);
     }
     
     public void close(){
@@ -193,7 +192,6 @@ public class JnDatabase {
     	System.out.println("-------------------------------------------------");
     	table.printAll();
     	System.out.println("-------------------------------------------------");
-    	System.out.print(PROMPT);
     }
     
     public void showTables(){
@@ -218,7 +216,6 @@ public class JnDatabase {
     	}
     	cursor.close();
     	System.out.println("----------------");
-    	System.out.print(PROMPT);
     	return;
     }
     
@@ -242,6 +239,5 @@ public class JnDatabase {
     
     public void printMessage(String s){
     	System.out.println(s);
-    	System.out.print(PROMPT);
     }
 }
