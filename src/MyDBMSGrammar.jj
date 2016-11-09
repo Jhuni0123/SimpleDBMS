@@ -337,6 +337,7 @@ void referentialConstraint(TableSchema schema) :
 {
   String tName;
   ArrayList<String> cnList1,cnList2;
+  Table table;
 }
 {
   < FOREIGN > < KEY >
@@ -344,7 +345,10 @@ void referentialConstraint(TableSchema schema) :
   < REFERENCES >
   tName = tableName()
   cnList2 = columnNameList()
-  { schema.setReferentialKey(cnList1, tName, cnList2); }
+  {
+    table = jdb.checkPrimaryKey(tName,cnList2);
+    schema.addReferentialKey(cnList1, table, cnList2);
+  }
 }
 
 

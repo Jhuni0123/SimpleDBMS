@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseException;
@@ -19,7 +21,7 @@ import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.rep.stream.Protocol.StartStream;
 
-import jnDB.exception.TableExistenceError;
+import jnDB.exception.*;
 
 public class JnDatabase {
 	public static final String CreateTableSuccess(String tableName) { return "'" + tableName + "' table is created"; }
@@ -103,7 +105,7 @@ public class JnDatabase {
     	return null;
     }
     
-    public boolean isExists(String tableName){
+    public boolean isExistsTable(String tableName){
     	Cursor cursor = null;
     	DatabaseEntry foundKey = new DatabaseEntry();
     	DatabaseEntry foundData = new DatabaseEntry();
@@ -126,7 +128,7 @@ public class JnDatabase {
     }
     
     public void createTable(TableSchema schema){
-    	if(isExists(schema.getName())) throw new TableExistenceError();
+    	if(isExistsTable(schema.getName())) throw new TableExistenceError();
     	schema.checkValidity();
     	Table table = new Table(schema);
     	putTable(table);
@@ -148,6 +150,8 @@ public class JnDatabase {
     		do{
         		String keyString = new String(foundKey.getData(), "UTF-8");
         		if(keyString.equals(tableName)){
+        			Table table = deserializeTable(foundData.getData());
+        			if(!table.isRemovable()) throw new DropReferencedTableError(table.getName());
         			cursor.delete();
         			cursor.close();
         			printMessage(DropSuccess(tableName));
@@ -197,6 +201,18 @@ public class JnDatabase {
     	System.out.println("----------------");
     	System.out.print(PROMPT);
     	return;
+    }
+    
+    public Table checkPrimaryKey(String tableName, ArrayList<String> colNameList){
+    	Table table = getTable(tableName);
+    	if(table == null) throw new ReferenceTableExistenceError();
+    	HashSet<String> pri = new HashSet<String>();
+    	for(String cName : colNameList){
+    		if(pri.contains(cName))throw new DuplicateColumnDefError();
+    		if(!table.colNum.containsKey(cName)) throw new ReferenceColumnExistenceError();
+    		pri.add(cName);
+    	}
+    	return table;
     }
     
     public void printMessage(String s){

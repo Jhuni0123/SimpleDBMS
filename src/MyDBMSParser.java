@@ -306,13 +306,15 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   static final public void referentialConstraint(TableSchema schema) throws ParseException {
   String tName;
   ArrayList<String> cnList1,cnList2;
+  Table table;
     jj_consume_token(FOREIGN);
     jj_consume_token(KEY);
     cnList1 = columnNameList();
     jj_consume_token(REFERENCES);
     tName = tableName();
     cnList2 = columnNameList();
-    schema.setReferentialKey(cnList1, tName, cnList2);
+    table = jdb.checkPrimaryKey(tName,cnList2);
+    schema.addReferentialKey(cnList1, table, cnList2);
   }
 
   static final public void selectList() throws ParseException {
@@ -715,26 +717,6 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  static private boolean jj_3R_14() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(33)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(32)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(34)) return true;
-    }
-    }
-    return false;
-  }
-
-  static private boolean jj_3R_10() {
-    if (jj_3R_11()) return true;
-    if (jj_scan_token(COMP_OP)) return true;
-    if (jj_3R_11()) return true;
-    return false;
-  }
-
   static private boolean jj_3R_15() {
     if (jj_scan_token(LEGAL_IDENTIFIER)) return true;
     return false;
@@ -788,6 +770,26 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   static private boolean jj_3_3() {
     if (jj_3R_9()) return true;
     if (jj_scan_token(PERIOD)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_14() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(33)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(32)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(34)) return true;
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_10() {
+    if (jj_3R_11()) return true;
+    if (jj_scan_token(COMP_OP)) return true;
+    if (jj_3R_11()) return true;
     return false;
   }
 
