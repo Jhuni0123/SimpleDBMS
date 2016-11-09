@@ -10,8 +10,8 @@ public class Table implements java.io.Serializable {
 	private String name;
 	ArrayList<Column> columns;
 	HashMap<String, Integer> colNum;
-	private HashSet<String> referencingTable, referencedByTable;
-	HashSet<Integer> primaryKey;
+	HashSet<String> referencingTable, referencedByTable;
+	HashSet<String> primaryKey;
 	
 	public Table(TableSchema schema){
 		this.name = schema.getName();
@@ -19,7 +19,8 @@ public class Table implements java.io.Serializable {
 		this.colNum = new HashMap<String, Integer>();
 		this.referencingTable = new HashSet<String>();
 		this.referencedByTable = new HashSet<String>();
-		
+		this.primaryKey = new HashSet<String>();
+	
 		for(Column col : schema.columns){
 			colNum.put(col.getName(), columns.size());
 			columns.add(col);
@@ -27,6 +28,7 @@ public class Table implements java.io.Serializable {
 		
 		for(String pri : schema.primaryKey){
 			columns.get(colNum.get(pri)).setPrimaryKey();
+			primaryKey.add(pri);
 		}
 		
 		for(ReferentialConstraint rc : schema.rcList){
@@ -45,6 +47,9 @@ public class Table implements java.io.Serializable {
 		}
 	}
 	
+	public HashSet<String> getPKSet(){		
+		return (HashSet<String>) primaryKey.clone();
+	}
 	public String getName(){ return name; }
 	public boolean isRemovable(){ return referencedByTable.isEmpty(); }
 }

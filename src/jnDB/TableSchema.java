@@ -16,6 +16,7 @@ public class TableSchema {
 		this.name = name;
 		columns = new ArrayList<Column>();
 		primaryKey = new ArrayList<String>();
+		rcList = new ArrayList<ReferentialConstraint>();
 	}
 	
 	public void addColumn(String cName, Type t, boolean isNotNull) {
@@ -39,7 +40,7 @@ public class TableSchema {
 			if(s.contains(str))return false;
 			s.add(str);
 		}
-		return false;
+		return true;
 	}
 	
 	public void checkValidity(){
@@ -70,7 +71,7 @@ public class TableSchema {
 	
 	public String getName(){ return name; }
 	
-	class ReferentialConstraint{
+	class ReferentialConstraint implements java.io.Serializable {
 		ArrayList<String> fKeys, pKeys;
 		Table table;
 		

@@ -16,6 +16,7 @@ public class Column implements java.io.Serializable {
 		notNull = isnn;
 		primaryKey = false;
 		foreignKey = false;
+		refList = new ArrayList<RefConstraint>();
 	}
 	
 	public void setForeignKey(String tName, String cName){
@@ -38,7 +39,7 @@ public class Column implements java.io.Serializable {
 	public boolean isForeignKey(){ return foreignKey; }
 	public Type getType(){ return type; }
 	
-	class RefConstraint{
+	class RefConstraint implements java.io.Serializable {
 		String tableName, colName;
 		public RefConstraint(String tName, String cName){
 			tableName = tName;

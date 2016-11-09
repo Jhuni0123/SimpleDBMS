@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -21,6 +22,7 @@ import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.rep.stream.Protocol.StartStream;
 
+import jnDB.TableSchema.ReferentialConstraint;
 import jnDB.exception.*;
 
 public class JnDatabase {
@@ -131,6 +133,12 @@ public class JnDatabase {
     	if(isExistsTable(schema.getName())) throw new TableExistenceError();
     	schema.checkValidity();
     	Table table = new Table(schema);
+    	for(ReferentialConstraint rc : schema.rcList){
+    		table.referencingTable.add(rc.table.getName());
+    		Table target = getTable(rc.table.getName());
+    		target.referencedByTable.add(table.getName());
+    		putTable(target);
+    	}
     	putTable(table);
     	printMessage(CreateTableSuccess(schema.getName()));
     }
@@ -151,16 +159,27 @@ public class JnDatabase {
         		String keyString = new String(foundKey.getData(), "UTF-8");
         		if(keyString.equals(tableName)){
         			Table table = deserializeTable(foundData.getData());
-        			if(!table.isRemovable()) throw new DropReferencedTableError(table.getName());
+        			if(!table.isRemovable()) { cursor.close(); throw new DropReferencedTableError(table.getName()); }
         			cursor.delete();
+        			for(String tName : table.referencingTable){
+        				Table t = getTable(tName);
+        				t.referencedByTable.remove(table.getName());
+        				putTable(t);
+        			}
         			cursor.close();
         			printMessage(DropSuccess(tableName));
         			return;
         		}
         	}while(cursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS);
-    	}catch(Exception e){
-    		
-    	}
+    	}catch(DatabaseException e){
+    		e.printStackTrace();
+    	} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     	cursor.close();
     	printMessage(NO_SUCH_TABLE);
     }
@@ -208,10 +227,16 @@ public class JnDatabase {
     	if(table == null) throw new ReferenceTableExistenceError();
     	HashSet<String> pri = new HashSet<String>();
     	for(String cName : colNameList){
-    		if(pri.contains(cName))throw new DuplicateColumnDefError();
+    		if(pri.contains(cName))throw new DuplicateColumnAppearError();
     		if(!table.colNum.containsKey(cName)) throw new ReferenceColumnExistenceError();
     		pri.add(cName);
     	}
+    	HashSet<String> s = table.getPKSet();
+    	for(String str : pri){
+    		if(!s.contains(str))throw new ReferenceNonPrimaryKeyError();
+    		s.remove(str);
+    	}
+    	if(!s.isEmpty())throw new ReferenceNonPrimaryKeyError();
     	return table;
     }
     
