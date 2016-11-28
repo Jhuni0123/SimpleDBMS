@@ -24,6 +24,7 @@ import com.sleepycat.je.rep.stream.Protocol.StartStream;
 
 import jnDB.TableSchema.ReferentialConstraint;
 import jnDB.exception.*;
+import jnDB.expression.BooleanExpression;
 import jnDB.type.*;
 
 public class JnDatabase {
@@ -239,6 +240,14 @@ public class JnDatabase {
     }
     
     public void insert(String tableName, ArrayList<String> cnList, ArrayList<Value> vList){
+    	
+    }
+    
+    public void delete(String tableName, BooleanExpression bexp){
+    	
+    }
+    
+    public void select(ArrayList<Pair<Pair<String,String>,String>> selectList, ArrayList<Pair<String,String>> fromList, BooleanExpression bexp){
     	
     }
     

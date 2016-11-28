@@ -10,6 +10,7 @@ PARSER_BEGIN(MyDBMSParser)
 import java.util.ArrayList;
 import jnDB.*;
 import jnDB.type.*;
+import jnDB.expression.*;
 
 public class MyDBMSParser
 {
@@ -191,12 +192,16 @@ void showTablesQuery() :
 }
 
 void selectQuery() :
-{}
+{
+  ArrayList<Pair<Pair<String,String>,String>> selects;
+  Pair<ArrayList<Pair<String,String>>, BooleanExpression> pab;
+}
 {
   < SELECT >
-  selectList()
-  tableExpression()
+  selects = selectList()
+  pab = tableExpression()
   < SEMICOLON >
+  { jdb.select(selects, pab.first, pab.second); }
 }
 
 void insertQuery() :
@@ -215,12 +220,14 @@ void insertQuery() :
 void deleteQuery() :
 {
   String tName;
+  BooleanExpression bexp = new BooleanExpression(true);
 }
 {
   < DELETE > < FROM >
   tName = tableName()
-  ( whereClause() )?
+  ( bexp = whereClause() )?
   < SEMICOLON >
+  { jdb.delete(tName, bexp); }
 }
 
 void tableElementList(TableSchema schema) :
@@ -292,130 +299,184 @@ void referentialConstraint(TableSchema schema) :
 }
 
 
-void selectList() :
-{}
+ArrayList<Pair<Pair<String,String>,String>> selectList() :
 {
-  < ASTERISK >
-| (
-    selectedColumn()
-    (
-      < COMMA >
-      selectedColumn()
-    )*
+  ArrayList<Pair<Pair<String,String>,String>> selects = new ArrayList<Pair<Pair<String,String>,String>>();
+  Pair<Pair<String,String>,String> select;
+}
+{
+  (    < ASTERISK >
+  | (
+      select = selectedColumn()
+      { selects.add(select); }
+      (
+        < COMMA >
+        select = selectedColumn()
+        { selects.add(select); }
+      )*
+    )
   )
+  { return selects; }
 }
 
-void selectedColumn() :
-{}
+Pair<Pair<String,String>,String> selectedColumn() :
+{
+  String tName= null, cName, cNameAs = null;
+}
 {
   (
     // both tableName and columnName are start with LEGAL_IDENTIFIER.
     // so we should LOOKAHEAD one more token to determine whether this part is exist.
     LOOKAHEAD(2)
-    tableName()
+    tName = tableName()
     < PERIOD >
   )?
-  columnName()
+  cName = columnName()
   (
     < AS >
-    columnName()
+    cNameAs = columnName()
   )?
+  { return new Pair<Pair<String,String>,String>(new Pair<String,String>(tName,cName),cNameAs); }
 }
 
-void tableExpression() :
-{}
+Pair<ArrayList<Pair<String,String>>, BooleanExpression> tableExpression() :
 {
-  fromClause()
-  ( whereClause() )?
+  ArrayList<Pair<String,String>> tRefList;
+  BooleanExpression bexp = new BooleanExpression(true);
+}
+{
+  tRefList = fromClause()
+  ( bexp = whereClause() )?
+  { return new Pair<ArrayList<Pair<String,String>>, BooleanExpression>(tRefList,bexp); }
 }
 
-void fromClause() :
-{}
+ArrayList<Pair<String,String>> fromClause() :
+{
+  ArrayList<Pair<String,String>> tRefList;
+}
 {
   < FROM >
-  tableReferenceList()
+  tRefList = tableReferenceList()
+  { return tRefList; }
 }
 
-void whereClause() :
-{}
+BooleanExpression whereClause() :
+{
+  BooleanExpression bexp;
+}
 {
   < WHERE >
-  booleanValueExpression()
+  bexp = booleanValueExpression()
+  { return bexp; }
 }
 
-void tableReferenceList() :
-{}
+ArrayList<Pair<String,String>> tableReferenceList() :
 {
-  referedTable()
+  ArrayList<Pair<String,String>> tRefList = new ArrayList<Pair<String,String>>();
+  Pair<String,String> tRef;
+}
+{
+  tRef = referedTable()
+  { tRefList.add(tRef); }
   (    < COMMA >
-    referedTable()
+    tRef = referedTable()
+    { tRefList.add(tRef); }
   )*
+  { return tRefList; }
 }
 
-void referedTable() :
-{}
+Pair<String,String> referedTable() :
+{ String tName, tNameAs = null; }
 {
-  tableName()
+  tName = tableName()
   (    < AS >
-    tableName()
+    tNameAs = tableName()
   )?
+  { return new Pair<String,String >(tName, tNameAs); }
 }
 
-void booleanValueExpression() :
-{}
+BooleanExpression booleanValueExpression() :
+{
+  ArrayList<BooleanTerm> bterms = new ArrayList<BooleanTerm>();
+  BooleanTerm bterm;
+}
 {
   // if we choose booleanValueExpression() < OR > booleanTerm() , left recursion can occur(infinite loop).
   // so we can change it and write like below.
-   booleanTerm()
+   bterm = booleanTerm()
+   { bterms.add(bterm); }
   (
     < OR >
     booleanTerm()
+    { bterms.add(bterm); }
   )*
+  { return new BooleanExpression(bterms); }
 }
 
-void booleanTerm() :
-{} 
+BooleanTerm booleanTerm() :
 {
-  booleanFactor()
+  ArrayList<BooleanFactor> bFactors = new ArrayList<BooleanFactor>();
+  BooleanFactor bFactor;
+}
+{
+  bFactor = booleanFactor()
+  { bFactors.add(bFactor); }
   (
     < AND >
     booleanFactor()
+    { bFactors.add(bFactor); }
   )*
+  { return new BooleanTerm(bFactors); }
 }
 
-void booleanFactor() :
-{}
+BooleanFactor booleanFactor() :
 {
-  ( < NOT > )?
-  booleanTest()
+  boolean not = false;
+  BooleanTest bTest;
 }
-
-void booleanTest() :
-{}
 {
-  predicate()
-| parenthesizedBooleanExpression()
+  (
+    < NOT >
+    { not = true; }
+  )?
+  bTest = booleanTest()
+  { return new BooleanFactor(not, bTest); }
 }
 
-void parenthesizedBooleanExpression() :
-{}
+BooleanTest booleanTest() :
+{
+  BooleanTest bTest;
+}
+{  (    bTest = predicate()
+  | bTest = parenthesizedBooleanExpression()
+  )
+  { return bTest; }
+}
+
+ParenthesizedBooleanExpression parenthesizedBooleanExpression() :
+{ BooleanExpression bexp; }
 {
   < LEFT_PAREN >
-  booleanValueExpression()
+  bexp = booleanValueExpression()
   < RIGHT_PAREN >
+  { return new ParenthesizedBooleanExpression(bexp); }
 }
 
-void predicate() :
-{}
+Predicate predicate() :
+{
+  Predicate pred;
+}
 {
   // both comparisonPredicate and nullPredicate can start with < LEGAL_IDENTIFIER > "." < LEGAL_IDENTIFIER >.
   // so we should LOOKAHEAD 3 more token to determine choice point.
-  LOOKAHEAD(4)
-  comparisonPredicate()
-| nullPredicate()
+  (
+    LOOKAHEAD(4)    pred = comparisonPredicate()
+  | pred = nullPredicate()
+  )
+  { return pred; }
 }
 
-void nullPredicate() :
+NullPredicate nullPredicate() :
 {
   String tName = null,cName;
   boolean isNull;
@@ -428,7 +489,7 @@ void nullPredicate() :
   )?
   cName = columnName()
   isNull = nullOperation()
-  
+  { return new NullPredicate(tName, cName, isNull); }
 }
 
 boolean nullOperation() :
@@ -445,27 +506,39 @@ boolean nullOperation() :
   { return isNull; }
 }
 
-void comparisonPredicate() :
-{}
+ComparisonPredicate comparisonPredicate() :
 {
-  compOperand()
-  < COMP_OP >
-  compOperand()
+  CompOperand l,r;
+  Token op;
+}
+{
+  l = compOperand()
+  op = < COMP_OP >
+  r = compOperand()
+  { return new ComparisonPredicate(l, op.toString(), r); }
+    
 }
 
-void compOperand() :
+CompOperand compOperand() :
 {
+  CompOperand cop;
+  Value value;
+  String tName = null, cName;
 }
-{
-  comparableValue()
-| (
-    (
-      LOOKAHEAD(2)
-      tableName()
-      < PERIOD >
-    )?
-    columnName()
+{  (    (      value = comparableValue()
+      { cop = new ComparableValue(value); }
+    )
+  | (
+      (
+        LOOKAHEAD(2)
+        tName = tableName()
+        < PERIOD >
+      )?
+      cName = columnName()
+      { cop = new ColumnValue(tName, cName); }
+    )
   )
+  { return cop; }
 }
 
 Pair<ArrayList<String>, ArrayList<Value>> insertColumnAndSource() :

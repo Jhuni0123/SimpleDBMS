@@ -2,6 +2,7 @@
 import java.util.ArrayList;
 import jnDB.*;
 import jnDB.type.*;
+import jnDB.expression.*;
 
 /** Token Manager. */
 public class MyDBMSParserTokenManager implements MyDBMSParserConstants
