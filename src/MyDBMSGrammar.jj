@@ -200,19 +200,25 @@ void selectQuery() :
 }
 
 void insertQuery() :
-{}
+{
+  String tName;
+  Pair<ArrayList<String>, ArrayList<Value>> listPair;
+}
 {
   < INSERT > < INTO >
-  tableName()
-  insertColumnAndSource()
+  tName = tableName()
+  listPair = insertColumnAndSource()
   < SEMICOLON >
+  { jdb.insert(tName, listPair.first, listPair.second); }
 }
 
 void deleteQuery() :
-{}
+{
+  String tName;
+}
 {
   < DELETE > < FROM >
-  tableName()
+  tName = tableName()
   ( whereClause() )?
   < SEMICOLON >
 }
@@ -410,23 +416,33 @@ void predicate() :
 }
 
 void nullPredicate() :
-{}
+{
+  String tName = null,cName;
+  boolean isNull;
+}
 {
   (
     LOOKAHEAD(2)
-    tableName()
+    tName = tableName()
     < PERIOD >
   )?
-  columnName()
-  nullOperation()
+  cName = columnName()
+  isNull = nullOperation()
+  
 }
 
-void nullOperation() :
-{}
+boolean nullOperation() :
+{
+  boolean isNull = true;
+}
 {
   < IS >
-  ( < NOT > )?
+  (
+    < NOT >
+    { isNull = false; }
+  )?
   < NULL >
+  { return isNull; }
 }
 
 void comparisonPredicate() :
@@ -438,7 +454,8 @@ void comparisonPredicate() :
 }
 
 void compOperand() :
-{}
+{
+}
 {
   comparableValue()
 | (
@@ -451,12 +468,16 @@ void compOperand() :
   )
 }
 
-void insertColumnAndSource() :
-{}
+Pair<ArrayList<String>, ArrayList<Value>> insertColumnAndSource() :
 {
-  (    columnNameList()
+  ArrayList<String> cnList = null;
+  ArrayList<Value> vList;
+}
+{
+  (    cnList = columnNameList()
   )?
-  valueList()
+  vList = valueList()
+  { return new Pair<ArrayList<String>, ArrayList<Value>>(cnList,vList); }
 }
 
 ArrayList<String> columnNameList() :
@@ -477,31 +498,59 @@ ArrayList<String> columnNameList() :
   { return cnList; }
 }
 
-void valueList() :
-{}
+ArrayList<Value> valueList() :
+{
+  ArrayList<Value> vList = new ArrayList<Value>();
+  Value v;
+}
 {
   < VALUES >
   < LEFT_PAREN >
-  value()
+  v = value()
+  { vList.add(v); }
   (    < COMMA >
     value()
+    { vList.add(v); }
   )*
   < RIGHT_PAREN >
+  { return vList; }
 }
 
-void value() :
-{}
+Value value() :
 {
-  < NULL >
-| comparableValue()
+  Value value;
+}
+{
+  (
+    (      < NULL >
+      {  value = new NullValue(); }
+    )
+  | (
+      value = comparableValue()
+    )
+  )
+  ( { return value; } )
 }
 
-void comparableValue() :
-{}
+Value comparableValue() :
 {
-  < INT_VALUE >
-| < CHAR_STRING >
-| < DATE_VALUE >
+  Token token;
+  Value value;
+}
+{
+  (    (      token = < INT_VALUE >
+      { value = new IntValue(Integer.parseInt(token.toString())); }
+    )
+  | (
+      token = < CHAR_STRING >
+      { value = new CharValue(token.toString()); }
+    )
+  | (
+      token = < DATE_VALUE >
+      { value = new DateValue(token.toString()); }
+    )
+  )
+  ( { return value; } )
 }
 
 Type dataType() :

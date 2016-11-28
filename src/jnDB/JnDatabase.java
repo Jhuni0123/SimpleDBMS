@@ -24,6 +24,7 @@ import com.sleepycat.je.rep.stream.Protocol.StartStream;
 
 import jnDB.TableSchema.ReferentialConstraint;
 import jnDB.exception.*;
+import jnDB.type.*;
 
 public class JnDatabase {
 	public static final String CreateTableSuccess(String tableName) { return "'" + tableName + "' table is created"; }
@@ -235,6 +236,10 @@ public class JnDatabase {
     	}
     	if(!s.isEmpty())throw new ReferenceNonPrimaryKeyError();
     	return table;
+    }
+    
+    public void insert(String tableName, ArrayList<String> cnList, ArrayList<Value> vList){
+    	
     }
     
     public void printMessage(String s){
