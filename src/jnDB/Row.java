@@ -6,4 +6,8 @@ import jnDB.type.*;
 
 public class Row implements java.io.Serializable {
 	ArrayList<Value> values;
+
+	public Value getValue(int i) {
+		return values.get(i);
+	}
 }

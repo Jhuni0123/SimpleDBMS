@@ -2,6 +2,9 @@ package jnDB.expression;
 
 import java.util.ArrayList;
 
+import jnDB.Column;
+import jnDB.Row;
+
 public class BooleanExpression {
 	ArrayList<BooleanTerm> booleanTerms;
 	
@@ -16,4 +19,12 @@ public class BooleanExpression {
 		}
 	}
 	
+	public boolean evaluate(ArrayList<Column> columns, Row row){
+		for(BooleanTerm bTerm : booleanTerms){
+			if(bTerm.evaluate(columns,row)){
+				return true;
+			}
+		}
+		return false;
+	}
 }

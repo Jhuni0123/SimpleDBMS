@@ -1,5 +1,10 @@
 package jnDB.expression;
 
-public class Predicate extends BooleanTest {
+import java.util.ArrayList;
 
+import jnDB.Column;
+import jnDB.Row;
+
+public abstract class Predicate extends BooleanTest {
+	public abstract boolean evaluate(ArrayList<Column> columns, Row row);
 }

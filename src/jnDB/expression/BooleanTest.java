@@ -1,5 +1,12 @@
 package jnDB.expression;
 
-public class BooleanTest {
+import java.util.ArrayList;
+
+import jnDB.Column;
+import jnDB.Row;
+
+public abstract class BooleanTest {
+
+	public abstract boolean evaluate(ArrayList<Column> columns, Row row);
 	
 }
