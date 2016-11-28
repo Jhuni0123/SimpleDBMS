@@ -240,7 +240,7 @@ public class JnDatabase {
     }
     
     public void insert(String tableName, ArrayList<String> cnList, ArrayList<Value> vList){
-    	
+    	// cnList can be null
     }
     
     public void delete(String tableName, BooleanExpression bexp){
@@ -248,6 +248,8 @@ public class JnDatabase {
     }
     
     public void select(ArrayList<Pair<Pair<String,String>,String>> selectList, ArrayList<Pair<String,String>> fromList, BooleanExpression bexp){
+    	// selectList can be empty
+    	// selectList .first.first & .second can be null
     	
     }
     

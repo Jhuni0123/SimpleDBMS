@@ -20,7 +20,7 @@ public class TableSchema {
 	}
 	
 	public void addColumn(String cName, Type t, boolean isNotNull) {
-		columns.add(new Column(cName, t, isNotNull));
+		columns.add(new Column(name, cName, t, isNotNull));
 	}
 	
 	public void setPrimaryKey(ArrayList<String> cnList) {

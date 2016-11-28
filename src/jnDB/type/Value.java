@@ -1,5 +1,5 @@
 package jnDB.type;
 
-public class Value {
+public class Value implements java.io.Serializable {
 	
 }

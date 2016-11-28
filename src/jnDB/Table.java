@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import jnDB.TableSchema.ReferentialConstraint;
+import jnDB.type.Value;
 
 public class Table implements java.io.Serializable {
 	private String name;
@@ -12,6 +13,8 @@ public class Table implements java.io.Serializable {
 	HashMap<String, Integer> colNum;
 	HashSet<String> referencingTable, referencedByTable;
 	HashSet<String> primaryKey;
+	HashSet<ArrayList<Value>> currPK;
+	ArrayList<Row> rows;
 	
 	public Table(TableSchema schema){
 		this.name = schema.getName();
@@ -20,7 +23,8 @@ public class Table implements java.io.Serializable {
 		this.referencingTable = new HashSet<String>();
 		this.referencedByTable = new HashSet<String>();
 		this.primaryKey = new HashSet<String>();
-	
+		this.currPK = new HashSet<ArrayList<Value>>();
+		this.rows = new ArrayList<Row>();
 		for(Column col : schema.columns){
 			colNum.put(col.getName(), columns.size());
 			columns.add(col);

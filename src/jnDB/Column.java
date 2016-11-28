@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import jnDB.type.*;
 
 public class Column implements java.io.Serializable {
-	private String name;
+	private String name, tableName;
 	private Type type;
 	private boolean notNull, primaryKey, foreignKey;
 	private ArrayList<RefConstraint> refList;
 	
-	public Column(String n, Type t, boolean isnn){
+	public Column(String tName, String n, Type t, boolean isnn){
 		name = n;
 		type = t;
 		notNull = isnn;
