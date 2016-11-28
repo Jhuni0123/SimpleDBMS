@@ -582,7 +582,7 @@ ArrayList<Value> valueList() :
   v = value()
   { vList.add(v); }
   (    < COMMA >
-    value()
+    v = value()
     { vList.add(v); }
   )*
   < RIGHT_PAREN >

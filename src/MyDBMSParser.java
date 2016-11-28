@@ -650,7 +650,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         break label_8;
       }
       jj_consume_token(COMMA);
-      value();
+      v = value();
       vList.add(v);
     }
     jj_consume_token(RIGHT_PAREN);
