@@ -72,8 +72,8 @@ public class TableSchema {
 	public String getName(){ return name; }
 	
 	class ReferentialConstraint implements java.io.Serializable {
-		ArrayList<String> fKeys, pKeys;
-		Table table;
+		public ArrayList<String> fKeys, pKeys;
+		public Table table;
 		
 		public ReferentialConstraint(ArrayList<String> fKeys, Table table, ArrayList<String> pKeys){
 			this.fKeys = fKeys;

@@ -1,5 +1,7 @@
 package jnDB.type;
 
+import jnDB.exception.WhereIncomparableError;
+
 public class NullValue extends Value {
 	
 	public NullValue(){}
@@ -15,7 +17,7 @@ public class NullValue extends Value {
 
 	@Override
 	public int compareTo(Value rv) {
-		// TODO Auto-generated method stub
-		return 0;
+		if(rv instanceof NullValue){ return 0; }
+		throw new WhereIncomparableError();
 	}
 }

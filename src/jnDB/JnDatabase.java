@@ -31,13 +31,13 @@ import jnDB.type.*;
 public class JnDatabase {
 	public static final String CreateTableSuccess(String tableName) { return "'" + tableName + "' table is created"; }
 	public static final String DropSuccess(String tableName) { return "'" + tableName + "' table is droped"; }
-	public static final String NO_SUCH_TABLE = "No such table";
-	public static final String SHOW_TABLES_NO_TABLE = "There is no table";
+	public static final String NoSuchTable = "No such table";
+	public static final String ShowTablesNoTable = "There is no table";
 	public static final String DeleteResult(int count){ return count + " row(s) are deleted"; }
 	public static final String DeleteReferentialIntegrityPassed(int count){ return count + " row(s) are not deleted due to referential integrity"; }
 	public static final String InsertResult = "The row is inserted";
-	
 	public static final String DB_KEY = "DB-Key";
+	
 	Environment myDbEnvironment;
     Database myDatabase;
     HashMap<String, Table> tables;
@@ -63,6 +63,7 @@ public class JnDatabase {
     	DatabaseEntry foundKey = new DatabaseEntry();
     	DatabaseEntry foundData = new DatabaseEntry();
     	
+    	// try get exists tables
     	try{
     		cursor = myDatabase.openCursor(null, null);
     		cursor.getFirst(foundKey, foundData, LockMode.DEFAULT);
@@ -78,6 +79,7 @@ public class JnDatabase {
     		
     	}
     	cursor.close();
+    	
     	tables = new HashMap<String,Table>();
     }
     
@@ -129,7 +131,7 @@ public class JnDatabase {
     	schema.checkValidity();
     	Table table = new Table(schema);
     	for(ReferentialConstraint rc : schema.rcList){
-    		table.referencingTable.add(rc.table.getName());
+    		table.fkConstraints.add(new FKConstraint(rc.table.getName(), rc.pKeys, rc.fKeys));
     		Table target = getTable(rc.table.getName());
     		target.referencedByTable.add(table.getName());
     		putTable(target);
@@ -140,14 +142,14 @@ public class JnDatabase {
     
     public void dropTable(String tableName){
     	if(!existsTable(tableName)){
-    		printMessage(NO_SUCH_TABLE);
+    		printMessage(NoSuchTable);
     		return;
     	}
     	
     	Table table = getTable(tableName);
     	if(!table.isRemovable()){ throw new DropReferencedTableError(table.getName()); }
-    	for(String tName : table.referencingTable){
-			Table t = getTable(tName);
+    	for(FKConstraint fkcons : table.fkConstraints){
+			Table t = getTable(fkcons.getRefTableName());
 			t.referencedByTable.remove(table.getName());
 			putTable(t);
 		}
@@ -159,7 +161,7 @@ public class JnDatabase {
     public void desc(String tName){
     	Table table = getTable(tName);
     	if(table == null){
-    		printMessage(NO_SUCH_TABLE);
+    		printMessage(NoSuchTable);
     		return;
     	}
     	System.out.println("-------------------------------------------------");
@@ -169,7 +171,7 @@ public class JnDatabase {
     
     public void showTables(){
     	if(tables.isEmpty()){
-    		printMessage(SHOW_TABLES_NO_TABLE);
+    		printMessage(ShowTablesNoTable);
     		return;
     	}
     	System.out.println("----------------");
@@ -200,17 +202,33 @@ public class JnDatabase {
     
     public void insert(String tableName, ArrayList<String> cnList, ArrayList<Value> vList){
     	// cnList can be null
+    	if(!existsTable(tableName)){
+    		printMessage(NoSuchTable);
+    		return;
+    	}
+    	Table table = getTable(tableName);
     	
     }
     
     public void delete(String tableName, BooleanExpression bexp){
+    	if(!existsTable(tableName)){
+    		printMessage(NoSuchTable);
+    		return;
+    	}
+    	
+    	Table table = getTable(tableName);
+    	for(Row row : table.getRows()){
+    		if(bexp.evaluate(table.getColumns(), row) instanceof True){
+    			
+    		}
+    	}
     	
     }
     
     public void select(ArrayList<Pair<Pair<String,String>,String>> selectList, ArrayList<Pair<String,String>> fromList, BooleanExpression bexp){
     	// selectList can be empty
     	// selectList .first.first & .second can be null
-    	
+    	// fromList pss.second can be null
     }
     
     public void printMessage(String s){

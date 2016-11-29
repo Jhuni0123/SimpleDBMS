@@ -11,7 +11,8 @@ public class Table implements java.io.Serializable {
 	private String name;
 	ArrayList<Column> columns;
 	HashMap<String, Integer> colNum;
-	HashSet<String> referencingTable, referencedByTable;
+	ArrayList<FKConstraint> fkConstraints;
+	HashSet<String> referencedByTable;
 	HashSet<String> primaryKey;
 	HashSet<ArrayList<Value>> currPK;
 	ArrayList<Row> rows;
@@ -20,11 +21,12 @@ public class Table implements java.io.Serializable {
 		this.name = schema.getName();
 		this.columns = new ArrayList<Column>();
 		this.colNum = new HashMap<String, Integer>();
-		this.referencingTable = new HashSet<String>();
+		this.fkConstraints = new ArrayList<FKConstraint>();
 		this.referencedByTable = new HashSet<String>();
 		this.primaryKey = new HashSet<String>();
 		this.currPK = new HashSet<ArrayList<Value>>();
 		this.rows = new ArrayList<Row>();
+		
 		for(Column col : schema.columns){
 			colNum.put(col.getName(), columns.size());
 			columns.add(col);
@@ -41,6 +43,13 @@ public class Table implements java.io.Serializable {
 				columns.get(colNum.get(rc.fKeys.get(i))).setForeignKey(rc.table.getName(), rc.pKeys.get(i));
 			}
 		}
+	}
+	
+	public ArrayList<Column> getColumns(){
+		return columns;
+	}
+	public ArrayList<Row> getRows(){
+		return rows;
 	}
 	
 	public void printAll(){
