@@ -1,6 +1,6 @@
 package jnDB.exception;
 
-public class WhereAmbiguousReference {
+public class WhereAmbiguousReference extends RuntimeException {
 	public WhereAmbiguousReference(){}
 	
 	public String getMessage(){

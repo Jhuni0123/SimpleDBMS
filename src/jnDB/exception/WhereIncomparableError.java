@@ -1,6 +1,6 @@
 package jnDB.exception;
 
-public class WhereIncomparableError {
+public class WhereIncomparableError extends RuntimeException {
 	public WhereIncomparableError(){}
 	
 	public String getMessage(){

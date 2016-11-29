@@ -1,6 +1,6 @@
 package jnDB.exception;
 
-public class InsertTypeMismatchError {
+public class InsertTypeMismatchError extends RuntimeException {
 	public InsertTypeMismatchError(){}
 	
 	public String getMessage(){

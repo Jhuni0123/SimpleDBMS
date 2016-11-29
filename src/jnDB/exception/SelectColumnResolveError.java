@@ -1,6 +1,6 @@
 package jnDB.exception;
 
-public class SelectColumnResolveError {
+public class SelectColumnResolveError extends RuntimeException {
 	private String colName;
 	public SelectColumnResolveError(String cName){
 		colName = cName;

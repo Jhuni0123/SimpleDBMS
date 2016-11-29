@@ -1,6 +1,6 @@
 package jnDB.exception;
 
-public class InsertColumnExistenceError {
+public class InsertColumnExistenceError extends RuntimeException {
 	String colName;
 	public InsertColumnExistenceError(String cName){
 		colName = cName;

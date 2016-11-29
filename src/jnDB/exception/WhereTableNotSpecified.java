@@ -1,6 +1,6 @@
 package jnDB.exception;
 
-public class WhereTableNotSpecified {
+public class WhereTableNotSpecified extends RuntimeException {
 	public WhereTableNotSpecified(){}
 	
 	public String getMessage(){

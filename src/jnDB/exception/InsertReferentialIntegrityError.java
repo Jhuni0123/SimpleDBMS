@@ -1,6 +1,6 @@
 package jnDB.exception;
 
-public class InsertReferentialIntegrityError {
+public class InsertReferentialIntegrityError extends RuntimeException {
 	public InsertReferentialIntegrityError(){}
 	
 	public String getMessage(){

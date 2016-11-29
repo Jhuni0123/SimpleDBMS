@@ -1,6 +1,6 @@
 package jnDB.exception;
 
-public class InsertColumnNonNullableError {
+public class InsertColumnNonNullableError extends RuntimeException {
 	private String colName;
 	public InsertColumnNonNullableError(String cName){
 		colName = cName;

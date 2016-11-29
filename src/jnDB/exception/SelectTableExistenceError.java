@@ -1,6 +1,6 @@
 package jnDB.exception;
 
-public class SelectTableExistenceError {
+public class SelectTableExistenceError extends RuntimeException {
 	String tableName;
 	public SelectTableExistenceError(String tName){
 		tableName = tName;

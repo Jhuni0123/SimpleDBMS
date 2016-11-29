@@ -1,6 +1,6 @@
 package jnDB.exception;
 
-public class WhereColumnNotExist {
+public class WhereColumnNotExist extends RuntimeException {
 	public WhereColumnNotExist(){}
 	
 	public String getMessage(){
