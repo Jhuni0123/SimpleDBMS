@@ -1,5 +1,7 @@
 package jnDB.type;
 
+import jnDB.exception.WhereIncomparableError;
+
 public class DateValue extends Value {
 	public int year, month, day;
 	
@@ -20,5 +22,20 @@ public class DateValue extends Value {
 	
 	public int hashCode(){
 		return 31*(31*(31*year + month) + day);
+	}
+
+	@Override
+	public int compareTo(Value rv) {
+		if(rv instanceof DateValue){
+			DateValue dv = (DateValue)rv;
+			if(year == dv.year){
+				if(month == dv.month){
+					return day - dv.day;
+				}
+				return month - dv.month;
+			}
+			return year - dv.year;
+		}
+		throw new WhereIncomparableError();
 	}
 }

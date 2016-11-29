@@ -12,4 +12,10 @@ public class NullValue extends Value {
 	public int hashCode(){
 		return 0;
 	}
+
+	@Override
+	public int compareTo(Value rv) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

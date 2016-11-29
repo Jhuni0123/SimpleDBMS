@@ -1,5 +1,7 @@
 package jnDB.type;
 
+import jnDB.exception.WhereIncomparableError;
+
 public class CharValue extends Value{
 	public String value;
 	
@@ -17,5 +19,14 @@ public class CharValue extends Value{
 	public int hashCode(){
 		if(value == null)return 0;
 		return value.hashCode();
+	}
+
+	@Override
+	public int compareTo(Value rv) {
+		if(rv instanceof CharValue){
+			CharValue cv = (CharValue)rv;
+			return value.compareTo(cv.value);
+		}
+		throw new WhereIncomparableError();
 	}
 }

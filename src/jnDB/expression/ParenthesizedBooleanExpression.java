@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import jnDB.Column;
 import jnDB.Row;
+import jnDB.type.BooleanValue;
 
 public class ParenthesizedBooleanExpression extends BooleanTest {
 	BooleanExpression booleanExpression;
@@ -12,7 +13,7 @@ public class ParenthesizedBooleanExpression extends BooleanTest {
 		booleanExpression = bexp;
 	}
 	
-	public boolean evaluate(ArrayList<Column> columns, Row row) {
+	public BooleanValue evaluate(ArrayList<Column> columns, Row row) {
 		return booleanExpression.evaluate(columns, row);
 	}
 

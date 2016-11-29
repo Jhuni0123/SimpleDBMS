@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import com.sleepycat.je.Database;
@@ -32,8 +33,14 @@ public class JnDatabase {
 	public static final String DropSuccess(String tableName) { return "'" + tableName + "' table is droped"; }
 	public static final String NO_SUCH_TABLE = "No such table";
 	public static final String SHOW_TABLES_NO_TABLE = "There is no table";
+	public static final String DeleteResult(int count){ return count + " row(s) are deleted"; }
+	public static final String DeleteReferentialIntegrityPassed(int count){ return count + " row(s) are not deleted due to referential integrity"; }
+	public static final String InsertResult = "The row is inserted";
+	
+	public static final String DB_KEY = "DB-Key";
 	Environment myDbEnvironment;
     Database myDatabase;
+    HashMap<String, Table> tables;
     
     public JnDatabase(){
     	myDbEnvironment = null;
@@ -51,87 +58,74 @@ public class JnDatabase {
         dbConfig.setAllowCreate(true);
         //dbConfig.setSortedDuplicates(true);
         myDatabase = myDbEnvironment.openDatabase(null, name, dbConfig);
+        
+        Cursor cursor = null;
+    	DatabaseEntry foundKey = new DatabaseEntry();
+    	DatabaseEntry foundData = new DatabaseEntry();
+    	
+    	try{
+    		cursor = myDatabase.openCursor(null, null);
+    		cursor.getFirst(foundKey, foundData, LockMode.DEFAULT);
+    		do{
+        		String keyString = new String(foundKey.getData(), "UTF-8");
+        		if(keyString.equals(DB_KEY)){
+        			cursor.close();
+        			tables = deserializeTables(foundData.getData());
+        			return;
+        		}
+        	}while(cursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS);
+    	}catch(Exception e){
+    		
+    	}
+    	cursor.close();
+    	tables = new HashMap<String,Table>();
     }
     
     public void close(){
-    	if(myDatabase != null) myDatabase.close();
-        if(myDbEnvironment != null) myDbEnvironment.close();
-    }
-    
-    private static byte[] serializeTable(Table table) throws IOException {
-    	ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(table);
-        return out.toByteArray();
-    }
-    
-    public static Table deserializeTable(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return (Table) is.readObject();
-    }
-    
-    public void putTable(Table table){
     	Cursor cursor = null;
     	DatabaseEntry key,data;
     	try{
     		cursor = myDatabase.openCursor(null, null);
-    		key = new DatabaseEntry(table.getName().getBytes("UTF-8"));
-    		data = new DatabaseEntry(serializeTable(table));
+    		key = new DatabaseEntry(DB_KEY.getBytes("UTF-8"));
+    		data = new DatabaseEntry(serializeTables(tables));
     		cursor.put(key, data);
     		cursor.close();
     	}
     	catch (Exception e){
     		if(cursor != null) cursor.close();
     	}
+    	
+    	if(myDatabase != null) myDatabase.close();
+        if(myDbEnvironment != null) myDbEnvironment.close();
+    }
+    
+    private static byte[] serializeTables(HashMap<String,Table> tables) throws IOException {
+    	ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(out);
+        os.writeObject(tables);
+        return out.toByteArray();
+    }
+    
+    public static HashMap<String,Table> deserializeTables(byte[] data) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is = new ObjectInputStream(in);
+        return (HashMap<String,Table>) is.readObject();
+    }
+    
+    public void putTable(Table table){
+    	tables.put(table.getName(), table);
     }
     
     public Table getTable(String tableName){
-    	Cursor cursor = null;
-    	DatabaseEntry foundKey = new DatabaseEntry();
-    	DatabaseEntry foundData = new DatabaseEntry();
-    	
-    	try{
-    		cursor = myDatabase.openCursor(null, null);
-    		cursor.getFirst(foundKey, foundData, LockMode.DEFAULT);
-    		do{
-        		String keyString = new String(foundKey.getData(), "UTF-8");
-        		if(keyString.equals(tableName)){
-        			cursor.close();
-        			return deserializeTable(foundData.getData());
-        		}
-        	}while(cursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS);
-    	}catch(Exception e){
-    		
-    	}
-    	cursor.close();
-    	return null;
+    	return tables.get(tableName);
     }
     
-    public boolean isExistsTable(String tableName){
-    	Cursor cursor = null;
-    	DatabaseEntry foundKey = new DatabaseEntry();
-    	DatabaseEntry foundData = new DatabaseEntry();
-    	
-    	try{
-    		cursor = myDatabase.openCursor(null, null);
-    		cursor.getFirst(foundKey, foundData, LockMode.DEFAULT);
-    		do{
-        		String keyString = new String(foundKey.getData(), "UTF-8");
-        		if(keyString.equals(tableName)){
-        			cursor.close();
-        			return true;
-        		}
-        	}while(cursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS);
-    	}catch(Exception e){
-    		
-    	}
-    	cursor.close();
-    	return false;
+    public boolean existsTable(String tableName){
+    	return tables.containsKey(tableName);
     }
     
     public void createTable(TableSchema schema){
-    	if(isExistsTable(schema.getName())) throw new TableExistenceError();
+    	if(existsTable(schema.getName())) throw new TableExistenceError();
     	schema.checkValidity();
     	Table table = new Table(schema);
     	for(ReferentialConstraint rc : schema.rcList){
@@ -145,45 +139,22 @@ public class JnDatabase {
     }
     
     public void dropTable(String tableName){
-    	Cursor cursor = null;
-    	DatabaseEntry foundKey = new DatabaseEntry();
-    	DatabaseEntry foundData = new DatabaseEntry();
+    	if(!existsTable(tableName)){
+    		printMessage(NO_SUCH_TABLE);
+    		return;
+    	}
     	
-    	try{
-    		cursor = myDatabase.openCursor(null, null);
-    		if(cursor.getFirst(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.NOTFOUND){
-    			printMessage(NO_SUCH_TABLE);
-    			cursor.close();
-    			return;
-    		}
-    		do{
-        		String keyString = new String(foundKey.getData(), "UTF-8");
-        		if(keyString.equals(tableName)){
-        			Table table = deserializeTable(foundData.getData());
-        			if(!table.isRemovable()) { cursor.close(); throw new DropReferencedTableError(table.getName()); }
-        			cursor.delete();
-        			for(String tName : table.referencingTable){
-        				Table t = getTable(tName);
-        				t.referencedByTable.remove(table.getName());
-        				putTable(t);
-        			}
-        			cursor.close();
-        			printMessage(DropSuccess(tableName));
-        			return;
-        		}
-        	}while(cursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS);
-    	}catch(DatabaseException e){
-    		e.printStackTrace();
-    	} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+    	Table table = getTable(tableName);
+    	if(!table.isRemovable()){ throw new DropReferencedTableError(table.getName()); }
+    	for(String tName : table.referencingTable){
+			Table t = getTable(tName);
+			t.referencedByTable.remove(table.getName());
+			putTable(t);
 		}
-    	cursor.close();
-    	printMessage(NO_SUCH_TABLE);
-    }
+    	
+    	tables.remove(tableName);
+    	printMessage(DropSuccess(tableName));
+	}
     
     public void desc(String tName){
     	Table table = getTable(tName);
@@ -197,26 +168,14 @@ public class JnDatabase {
     }
     
     public void showTables(){
-    	Cursor cursor = null;
-    	DatabaseEntry foundKey = new DatabaseEntry();
-    	DatabaseEntry foundData = new DatabaseEntry();
-    	
-    	try{
-    		cursor = myDatabase.openCursor(null, null);
-    		if(cursor.getFirst(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.NOTFOUND) {
-    			printMessage(SHOW_TABLES_NO_TABLE);
-    			cursor.close();
-    			return;
-    		}
-    		System.out.println("----------------");
-    		do{
-        		String keyString = new String(foundKey.getData(), "UTF-8");
-        		System.out.println(keyString);
-        	}while(cursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS);
-    	}catch(Exception e){
-    		
+    	if(tables.isEmpty()){
+    		printMessage(SHOW_TABLES_NO_TABLE);
+    		return;
     	}
-    	cursor.close();
+    	System.out.println("----------------");
+    	for(String tableName : tables.keySet()){
+    		System.out.println(tableName);
+    	}
     	System.out.println("----------------");
     	return;
     }
@@ -241,6 +200,7 @@ public class JnDatabase {
     
     public void insert(String tableName, ArrayList<String> cnList, ArrayList<Value> vList){
     	// cnList can be null
+    	
     }
     
     public void delete(String tableName, BooleanExpression bexp){

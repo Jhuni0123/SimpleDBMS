@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import jnDB.Column;
 import jnDB.Row;
+import jnDB.type.*;
 
 public class BooleanExpression {
 	ArrayList<BooleanTerm> booleanTerms;
@@ -19,12 +20,17 @@ public class BooleanExpression {
 		}
 	}
 	
-	public boolean evaluate(ArrayList<Column> columns, Row row){
+	public BooleanValue evaluate(ArrayList<Column> columns, Row row){
+		BooleanValue result = new False();
 		for(BooleanTerm bTerm : booleanTerms){
-			if(bTerm.evaluate(columns,row)){
-				return true;
+			BooleanValue bt = bTerm.evaluate(columns, row);
+			if(bt instanceof True){
+				return new True();
+			}
+			else if(result instanceof False && bt instanceof Unknown){
+				result = new Unknown();
 			}
 		}
-		return false;
+		return result;
 	}
 }

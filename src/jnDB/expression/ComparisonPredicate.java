@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import jnDB.Column;
 import jnDB.Row;
-import jnDB.type.Value;
+import jnDB.type.*;
 
 public class ComparisonPredicate extends Predicate {
 	static final int L = 0;
@@ -16,6 +16,7 @@ public class ComparisonPredicate extends Predicate {
 	
 	CompOperand left, right;
 	int cop;
+	
 	public ComparisonPredicate(CompOperand l, String op, CompOperand r){
 		left = l;
 		right = r;
@@ -27,20 +28,25 @@ public class ComparisonPredicate extends Predicate {
 		else if(op.equals("!=")) cop = NE;
 	}
 	
-	public boolean evaluate(ArrayList<Column> columns, Row row) {
+	public BooleanValue evaluate(ArrayList<Column> columns, Row row) {
 		Value lv = left.evaluate(columns,row);
 		Value rv = right.evaluate(columns,row);
-		int result = lv.compareTo(rv);
+		if(lv instanceof NullValue || rv instanceof NullValue){ return new Unknown(); }
 		
+		int result = lv.compareTo(rv);
+		boolean ret;
 		switch(cop){
-		case L : return result <  0;
-		case G : return result >  0;
-		case LE: return result <= 0;
-		case GE: return result >= 0;
-		case EQ: return result == 0;
-		case NE: return result != 0;
-		default: return false;
+		case L : ret = result <  0; break;
+		case G : ret = result >  0; break;
+		case LE: ret = result <= 0; break;
+		case GE: ret = result >= 0; break;
+		case EQ: ret = result == 0; break;
+		case NE: ret = result != 0; break;
+		default: return new False();
 		}
+		
+		if(ret == false){ return new False(); }
+		else { return new True(); }
 	}
 
 }

@@ -4,8 +4,7 @@ import java.util.ArrayList;
 
 import jnDB.Column;
 import jnDB.Row;
-import jnDB.type.NullValue;
-import jnDB.type.Value;
+import jnDB.type.*;
 
 public class NullPredicate extends Predicate {
 	String tableName, columnName;
@@ -17,9 +16,16 @@ public class NullPredicate extends Predicate {
 		isNull = isnull;
 	}
 
-	public boolean evaluate(ArrayList<Column> columns, Row row) {
+	public BooleanValue evaluate(ArrayList<Column> columns, Row row) {
 		// TODO: get correct value
 		Value v = row.getValue(0);
-		return v.equals(NULL) == isNull;
+		if(v instanceof NullValue){
+			if(isNull){ return new True(); }
+			else { return new False(); }
+		}
+		else{
+			if(isNull){ return new False(); }
+			else { return new True(); }
+		}
 	}
 }

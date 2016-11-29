@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import jnDB.Column;
 import jnDB.Row;
+import jnDB.type.*;
 
 public class BooleanFactor {
 	boolean not;
@@ -14,7 +15,12 @@ public class BooleanFactor {
 		booleanTest = bTest;
 	}
 
-	public boolean evaluate(ArrayList<Column> columns, Row row) {
-		return not ^ booleanTest.evaluate(columns,row);
+	public BooleanValue evaluate(ArrayList<Column> columns, Row row) {
+		BooleanValue bt = booleanTest.evaluate(columns, row);
+		if(bt instanceof False){ return new True(); }
+		else if(bt instanceof True){ return new False(); }
+		else if(bt instanceof Unknown){ return new Unknown(); }
+		
+		return null;
 	}
 }
