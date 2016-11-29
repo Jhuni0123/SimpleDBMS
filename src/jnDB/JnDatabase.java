@@ -22,6 +22,7 @@ import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.rep.stream.Protocol.StartStream;
+import com.sun.org.apache.regexp.internal.recompile;
 
 import jnDB.TableSchema.ReferentialConstraint;
 import jnDB.exception.*;
@@ -165,7 +166,7 @@ public class JnDatabase {
     		return;
     	}
     	System.out.println("-------------------------------------------------");
-    	table.printAll();
+    	table.descript();
     	System.out.println("-------------------------------------------------");
     }
     
@@ -191,7 +192,7 @@ public class JnDatabase {
     		if(!table.colNum.containsKey(cName)) throw new ReferenceColumnExistenceError();
     		pri.add(cName);
     	}
-    	HashSet<String> s = table.getPKSet();
+    	ArrayList<String> s = table.getPKSet();
     	for(String str : pri){
     		if(!s.contains(str))throw new ReferenceNonPrimaryKeyError();
     		s.remove(str);
@@ -207,7 +208,76 @@ public class JnDatabase {
     		return;
     	}
     	Table table = getTable(tableName);
+    	Row newRow = new Row(new ArrayList<Value>());
+    	final ArrayList<Column> cols = table.getColumns();
     	
+    	if(cnList == null){
+    		cnList = new ArrayList<String>();
+    		for(Column col : cols){
+    			cnList.add(col.getName());
+    		}
+    	}
+    	if(cnList.size() != vList.size()){ throw new InsertTypeMismatchError(); }
+    	int num = cnList.size();
+    	
+    	
+    	for(int i=0;i<cols.size();i++){
+    		newRow.append(null);
+    	}
+    	
+    	for(int i=0;i<num;i++){
+    		String cName = cnList.get(i);
+    		int index = table.getColIndex(cName);
+    		if(index == -1){ throw new InsertColumnExistenceError(cName); }
+    		Value v = vList.get(index);
+    		if(cols.get(index).isNotNull() && v instanceof NullValue){ throw new InsertColumnNonNullableError(cName); }
+    		boolean success = v.castTo(cols.get(index).getType());
+    		if(!success){ throw new InsertTypeMismatchError(); }
+    		newRow.setValue(index, v);
+    	}
+    	for(int i=0;i<cols.size();i++){
+    		if(newRow.getValue(i) == null){ newRow.setValue(i, new NullValue()); }
+    	}
+    	
+    	// primary key check
+    	ArrayList<String> pks = table.getPKSet();
+    	if(!pks.isEmpty()){
+    		for(Row row : table.getRows()){
+    			boolean dup = true;
+    			for(String pk : pks){
+    				int index = table.getColIndex(pk);
+    				if(row.getValue(index).compareTo(newRow.getValue(index)) != 0){ dup = false; break; }
+    			}
+    			if(dup){ throw new InsertDuplicatePrimaryKeyError(); }
+    		}
+    	}
+    	
+    	// foreign key check
+    	for(FKConstraint fkCons : table.fkConstraints){
+    		boolean hasNull = false;
+    		for(String cName : fkCons.fromColumns){
+    			if(newRow.getValue(table.getColIndex(cName)) instanceof NullValue){ hasNull = true; break;}
+    		}
+    		if(hasNull){ continue; }
+    		
+    		boolean success = false;
+    		Table toTable = getTable(fkCons.toTable);
+    		for(Row toRow : toTable.getRows()){
+    			boolean diff = false;
+    			int fkSize = fkCons.fromColumns.size();
+        		for(int i=0;i<fkSize;i++){
+        			int toIndex = toTable.getColIndex(fkCons.toColumns.get(i));
+        			int fromIndex = table.getColIndex(fkCons.fromColumns.get(i));
+        			Value toV = toRow.getValue(toIndex);
+        			Value fromV = newRow.getValue(fromIndex);
+        			if(!toV.equals(fromV)){ diff = true; break; }
+        		}	
+        		if(!diff){ success = true; break; }
+    		}
+    		if(!success){ throw new InsertReferentialIntegrityError(); }
+    	}
+    	table.addRow(newRow);
+    	table.printAll();
     }
     
     public void delete(String tableName, BooleanExpression bexp){

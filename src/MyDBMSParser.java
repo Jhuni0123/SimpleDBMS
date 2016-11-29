@@ -689,7 +689,8 @@ public class MyDBMSParser implements MyDBMSParserConstants {
       break;
     case CHAR_STRING:
       token = jj_consume_token(CHAR_STRING);
-        value = new CharValue(token.toString());
+        String str = token.toString();
+        value = new CharValue(str.substring(1,str.length()-1));
       break;
     case DATE_VALUE:
       token = jj_consume_token(DATE_VALUE);
@@ -774,8 +775,8 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  static private boolean jj_3R_18() {
-    if (jj_scan_token(DATE_VALUE)) return true;
+  static private boolean jj_3R_15() {
+    if (jj_scan_token(LEGAL_IDENTIFIER)) return true;
     return false;
   }
 
@@ -799,11 +800,6 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     return false;
   }
 
-  static private boolean jj_3R_15() {
-    if (jj_scan_token(LEGAL_IDENTIFIER)) return true;
-    return false;
-  }
-
   static private boolean jj_3_3() {
     if (jj_3R_9()) return true;
     if (jj_scan_token(PERIOD)) return true;
@@ -823,6 +819,11 @@ public class MyDBMSParser implements MyDBMSParserConstants {
 
   static private boolean jj_3R_16() {
     if (jj_scan_token(INT_VALUE)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_9() {
+    if (jj_scan_token(LEGAL_IDENTIFIER)) return true;
     return false;
   }
 
@@ -849,13 +850,13 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     return false;
   }
 
-  static private boolean jj_3R_9() {
-    if (jj_scan_token(LEGAL_IDENTIFIER)) return true;
+  static private boolean jj_3_2() {
+    if (jj_3R_10()) return true;
     return false;
   }
 
-  static private boolean jj_3_2() {
-    if (jj_3R_10()) return true;
+  static private boolean jj_3R_18() {
+    if (jj_scan_token(DATE_VALUE)) return true;
     return false;
   }
 

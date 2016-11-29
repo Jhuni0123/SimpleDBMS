@@ -7,7 +7,7 @@ public class Type implements java.io.Serializable {
 	public boolean equals(Object obj){
 		if(obj == null)return false;
 		if(this.getClass() != obj.getClass()) return false;
-		if(this.getClass() == CharType.class){ return ((CharType)this).len == ((CharType)obj).len; }
+		if(this.getClass() == CharType.class){ return ((CharType)this).length() == ((CharType)obj).length(); }
 		return true;
 	}
 }

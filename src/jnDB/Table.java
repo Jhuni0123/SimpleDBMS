@@ -13,7 +13,7 @@ public class Table implements java.io.Serializable {
 	HashMap<String, Integer> colNum;
 	ArrayList<FKConstraint> fkConstraints;
 	HashSet<String> referencedByTable;
-	HashSet<String> primaryKey;
+	ArrayList<String> primaryKey;
 	HashSet<ArrayList<Value>> currPK;
 	ArrayList<Row> rows;
 	
@@ -23,7 +23,7 @@ public class Table implements java.io.Serializable {
 		this.colNum = new HashMap<String, Integer>();
 		this.fkConstraints = new ArrayList<FKConstraint>();
 		this.referencedByTable = new HashSet<String>();
-		this.primaryKey = new HashSet<String>();
+		this.primaryKey = new ArrayList<String>();
 		this.currPK = new HashSet<ArrayList<Value>>();
 		this.rows = new ArrayList<Row>();
 		
@@ -45,14 +45,14 @@ public class Table implements java.io.Serializable {
 		}
 	}
 	
-	public ArrayList<Column> getColumns(){
+	public final ArrayList<Column> getColumns(){
 		return columns;
 	}
 	public ArrayList<Row> getRows(){
 		return rows;
 	}
 	
-	public void printAll(){
+	public void descript(){
 		System.out.println("table_name [" + name + "]");
 		System.out.format("%-20s%-15s%-15s%-15s\n", "column_name", "type", "null", "key");
 		for(Column col : columns){
@@ -60,9 +60,24 @@ public class Table implements java.io.Serializable {
 		}
 	}
 	
-	public HashSet<String> getPKSet(){		
-		return (HashSet<String>) primaryKey.clone();
+	public ArrayList<String> getPKSet(){
+		return (ArrayList<String>)primaryKey.clone();
 	}
 	public String getName(){ return name; }
 	public boolean isRemovable(){ return referencedByTable.isEmpty(); }
+	
+	public void printAll(){
+		for(Row row : rows){
+			System.out.println(row.toString());
+		}
+	}
+	
+	public int getColIndex(String cName){
+		if(!colNum.containsKey(cName))return -1;
+		return colNum.get(cName);
+	}
+	
+	public void addRow(Row row){
+		rows.add(row);
+	}
 }

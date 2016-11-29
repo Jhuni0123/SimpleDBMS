@@ -11,6 +11,7 @@ public class Column implements java.io.Serializable {
 	private ArrayList<RefConstraint> refList;
 	
 	public Column(String tName, String n, Type t, boolean isnn){
+		tableName = tName;
 		name = n;
 		type = t;
 		notNull = isnn;

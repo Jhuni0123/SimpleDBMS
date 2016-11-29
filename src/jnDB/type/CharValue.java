@@ -9,6 +9,16 @@ public class CharValue extends Value{
 		value = v;
 	}
 	
+	public boolean castTo(Type t){
+		if(t instanceof CharType){
+			CharType ct = (CharType)t;
+			if(value.length() < ct.length()){ return false; }
+			value = value.substring(0, ((CharType) t).length());
+			return true;
+		}
+		return false;
+	}
+	
 	public boolean equals(Object obj){
 		if(obj instanceof CharValue){
 			return value.equals(((CharValue)obj).value);
@@ -28,5 +38,9 @@ public class CharValue extends Value{
 			return value.compareTo(cv.value);
 		}
 		throw new WhereIncomparableError();
+	}
+	
+	public String toString(){
+		return "'" + value + "'";
 	}
 }

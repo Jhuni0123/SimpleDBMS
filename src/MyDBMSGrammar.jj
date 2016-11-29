@@ -616,7 +616,10 @@ Value comparableValue() :
     )
   | (
       token = < CHAR_STRING >
-      { value = new CharValue(token.toString()); }
+      {
+        String str = token.toString();
+        value = new CharValue(str.substring(1,str.length()-1));
+      }
     )
   | (
       token = < DATE_VALUE >

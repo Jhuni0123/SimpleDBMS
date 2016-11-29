@@ -30,4 +30,16 @@ public class IntValue extends Value {
 		}
 		throw new WhereIncomparableError();
 	}
+	
+	public String toString(){
+		return Integer.toString(value);
+	}
+
+	@Override
+	public boolean castTo(Type t) {
+		if(t instanceof IntType){
+			return true;
+		}
+		return false;
+	}
 }

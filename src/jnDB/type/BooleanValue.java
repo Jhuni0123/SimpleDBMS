@@ -1,5 +1,5 @@
 package jnDB.type;
 
-public abstract class BooleanValue extends Value{
+public abstract class BooleanValue{
 	
 }

@@ -38,4 +38,16 @@ public class DateValue extends Value {
 		}
 		throw new WhereIncomparableError();
 	}
+	
+	public String toString(){
+		return Integer.toString(year, 4) + "-" + Integer.toString(month,2) + "-" + Integer.toString(day,2);
+	}
+
+	@Override
+	public boolean castTo(Type t) {
+		if(t instanceof DateType){
+			return true;
+		}
+		return false;
+	}
 }
