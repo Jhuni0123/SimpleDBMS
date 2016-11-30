@@ -29,6 +29,11 @@ public class ComparisonPredicate extends Predicate {
 	}
 	
 	public BooleanValue evaluate(ArrayList<Column> columns, Row row) {
+		if(row == null){
+			left.evaluate(columns, row);
+			right.evaluate(columns, row);
+			return null;
+		}
 		Value lv = left.evaluate(columns,row);
 		Value rv = right.evaluate(columns,row);
 		if(lv instanceof NullValue || rv instanceof NullValue){ return new Unknown(); }

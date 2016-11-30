@@ -21,11 +21,17 @@ public class BooleanExpression {
 	}
 	
 	public BooleanValue evaluate(ArrayList<Column> columns, Row row){
+		if(row == null){
+			for(BooleanTerm bt : booleanTerms){
+				bt.evaluate(columns, row);
+			}
+			return null;
+		}
 		BooleanValue result = new False();
 		for(BooleanTerm bTerm : booleanTerms){
 			BooleanValue bt = bTerm.evaluate(columns, row);
 			if(bt instanceof True){
-				return new True();
+				result = new True();
 			}
 			else if(result instanceof False && bt instanceof Unknown){
 				result = new Unknown();

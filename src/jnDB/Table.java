@@ -45,6 +45,17 @@ public class Table implements java.io.Serializable {
 		}
 	}
 	
+	public Table(){
+		this.name = "";
+		this.columns = new ArrayList<Column>();
+		this.colNum = new HashMap<String, Integer>();
+		this.fkConstraints = new ArrayList<FKConstraint>();
+		this.referencedByTable = new HashSet<String>();
+		this.primaryKey = new ArrayList<String>();
+		this.currPK = new HashSet<ArrayList<Value>>();
+		this.rows = new ArrayList<Row>();
+	}
+	
 	public final ArrayList<Column> getColumns(){
 		return columns;
 	}
@@ -79,5 +90,29 @@ public class Table implements java.io.Serializable {
 	
 	public void addRow(Row row){
 		rows.add(row);
+	}
+	
+	public void removeRow(int index){
+		rows.remove(index);
+	}
+	
+	public Table joinTable(Table other, String tNameAs){
+		Table res = new Table();
+		for(Column col : columns){
+			res.columns.add(col);
+		}
+		for(Column col : other.columns){
+			res.columns.add(new Column(tNameAs, col.getName(), col.getType(), col.isNotNull()));
+		}
+		
+		for(Row row1 : rows){
+			for(Row row2 : other.rows){
+				Row newRow = new Row(new ArrayList<Value>());
+				newRow.appendAll(row1);
+				newRow.appendAll(row2);
+				res.addRow(newRow);
+			}
+		}
+		return res;
 	}
 }

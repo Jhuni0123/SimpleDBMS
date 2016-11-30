@@ -16,6 +16,10 @@ public class BooleanFactor {
 	}
 
 	public BooleanValue evaluate(ArrayList<Column> columns, Row row) {
+		if(row == null){
+			booleanTest.evaluate(columns, row);
+			return null;
+		}
 		BooleanValue bt = booleanTest.evaluate(columns, row);
 		if(bt instanceof False){ return new True(); }
 		else if(bt instanceof True){ return new False(); }

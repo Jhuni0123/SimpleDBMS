@@ -31,6 +31,7 @@ public class Column implements java.io.Serializable {
 	}
 	
 	public String getName(){ return name; }
+	public String getTable(){ return tableName; }
 	@Override
 	public String toString(){
 		return String.format("%-20s%-15s%-15s%-15s", name, type.toString(), notNull?"N":"Y", primaryKey?foreignKey?"PRI/FOR":"PRI":foreignKey?"FOR":"");

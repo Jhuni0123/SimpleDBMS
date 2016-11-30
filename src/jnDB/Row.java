@@ -32,9 +32,9 @@ public class Row implements java.io.Serializable {
 	}
 	
 	public String toString(){
-		String r = "";
+		String r = "|";
 		for(Value v : values){
-			r = r + (" " + v.toString());
+			r = r + (" " + v.toString() + " |");
 		}
 		return r;
 	}

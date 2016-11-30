@@ -277,7 +277,7 @@ public class JnDatabase {
     		if(!success){ throw new InsertReferentialIntegrityError(); }
     	}
     	table.addRow(newRow);
-    	table.printAll();
+    	printMessage(InsertResult);
     }
     
     public void delete(String tableName, BooleanExpression bexp){
@@ -287,6 +287,23 @@ public class JnDatabase {
     	}
     	
     	Table table = getTable(tableName);
+    	
+    	// column test
+    	bexp.evaluate(table.getColumns(), null);
+    	int suc = 0, fail = 0;
+    	for(int i=0;i<table.getRows().size();i++){
+    		Row row = table.getRows().get(i);
+    		if(bexp.evaluate(table.getColumns(), row) instanceof True){
+    			boolean removable = true;
+    			
+    			if(removable){
+        			table.removeRow(i);
+        			i--;
+        			suc++;
+    			}
+    			else { fail++; }
+    		}
+    	}
     	for(Row row : table.getRows()){
     		if(bexp.evaluate(table.getColumns(), row) instanceof True){
     			
@@ -299,6 +316,37 @@ public class JnDatabase {
     	// selectList can be empty
     	// selectList .first.first & .second can be null
     	// fromList pss.second can be null
+    	
+    	if(selectList.isEmpty()){
+    		
+    	}
+    	HashSet<String> tableNameSet = new HashSet<String>();
+    	
+    	for(Pair<String,String> pss : fromList){
+    		String newName;
+    		if(!existsTable(pss.first)){ throw new SelectTableExistenceError(pss.first); }
+    		if(pss.second == null){
+    			newName = pss.first;
+    		}
+    		else{
+    			newName = pss.second;
+    		}
+    		if(tableNameSet.contains(newName)){ throw new FromDuplicateTableNameError(newName); }
+    	}
+    	
+    	Table res = new Table();
+		res.addRow(new Row(new ArrayList<Value>()));
+
+    	for(Pair<String,String> pss : fromList){
+    		Table other = getTable(pss.first);
+    		String newName = pss.first;
+    		if(pss.second != null){ newName = pss.second; }
+    		res = res.joinTable(other, newName);
+    	}
+		
+    	for(Row row : res.getRows()){
+    		System.out.println(row.toString());
+    	}
     }
     
     public void printMessage(String s){

@@ -13,7 +13,7 @@ public class ParenthesizedBooleanExpression extends BooleanTest {
 		booleanExpression = bexp;
 	}
 	
-	public BooleanValue evaluate(ArrayList<Column> columns, Row row) {
+	public BooleanValue evaluate(ArrayList<Column> columns, Row row){
 		return booleanExpression.evaluate(columns, row);
 	}
 
