@@ -37,9 +37,9 @@ public class ComparisonPredicate extends Predicate {
 		Value lv = left.evaluate(columns,row);
 		Value rv = right.evaluate(columns,row);
 		if(lv instanceof NullValue || rv instanceof NullValue){ return new Unknown(); }
-		
 		int result = lv.compareTo(rv);
 		boolean ret;
+		
 		switch(cop){
 		case L : ret = result <  0; break;
 		case G : ret = result >  0; break;
@@ -49,9 +49,21 @@ public class ComparisonPredicate extends Predicate {
 		case NE: ret = result != 0; break;
 		default: return new False();
 		}
-		
 		if(ret == false){ return new False(); }
 		else { return new True(); }
 	}
-
+	
+	public String toString(){
+		String r = "";
+		r = r + left;
+		switch(cop){
+		case L : r = r + " < "; break;
+		case G : r = r + " > "; break;
+		case LE: r = r + " <= "; break;
+		case GE: r = r + " >= "; break;
+		case EQ: r = r + " = "; break;
+		case NE: r = r + " != "; break;
+		}
+		return r + right;
+	}
 }

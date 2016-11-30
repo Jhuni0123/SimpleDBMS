@@ -16,5 +16,7 @@ public class ParenthesizedBooleanExpression extends BooleanTest {
 	public BooleanValue evaluate(ArrayList<Column> columns, Row row){
 		return booleanExpression.evaluate(columns, row);
 	}
-
+	public String toString(){
+		return "(" + booleanExpression + ")";
+	}
 }

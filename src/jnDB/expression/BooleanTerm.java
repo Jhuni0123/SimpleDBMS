@@ -36,4 +36,15 @@ public class BooleanTerm {
 		}
 		return result;
 	}
+	
+	public String toString(){
+		if(booleanFactors.isEmpty()){
+			return "True";
+		}
+		String r = "" + booleanFactors.get(0);
+		for(int i=1;i<booleanFactors.size();i++){
+			r = r + " and " + booleanFactors.get(i);
+		}
+		return r;
+	}
 }

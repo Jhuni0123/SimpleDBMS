@@ -317,9 +317,6 @@ public class JnDatabase {
     	// selectList .first.first & .second can be null
     	// fromList pss.second can be null
     	
-    	if(selectList.isEmpty()){
-    		
-    	}
     	HashSet<String> tableNameSet = new HashSet<String>();
     	
     	for(Pair<String,String> pss : fromList){
@@ -343,10 +340,24 @@ public class JnDatabase {
     		if(pss.second != null){ newName = pss.second; }
     		res = res.joinTable(other, newName);
     	}
-		
+		bexp.evaluate(res.getColumns(), null);
+		System.out.println(bexp.toString());
     	for(Row row : res.getRows()){
-    		System.out.println(row.toString());
+    		if(bexp.evaluate(res.getColumns(), row) instanceof True){
+    			System.out.println(row.toString());
+    		}
+    		else{
+    			System.out.println("fail");
+    		}
     	}
+    	
+    	if(selectList.isEmpty()){
+    		for(Column col : res.getColumns()){
+    			selectList.add(new Pair<Pair<String,String>,String>(new Pair<String,String>(col.getTable(),col.getName()),null));
+    		}
+    	}
+    	
+    	
     }
     
     public void printMessage(String s){

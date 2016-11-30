@@ -21,10 +21,22 @@ public class BooleanFactor {
 			return null;
 		}
 		BooleanValue bt = booleanTest.evaluate(columns, row);
-		if(bt instanceof False){ return new True(); }
-		else if(bt instanceof True){ return new False(); }
+		if(bt instanceof False){
+			if(not)return new True();
+			else return new False();
+		}
+		else if(bt instanceof True){
+			if(not)return new False();
+			else return new True();
+		}
 		else if(bt instanceof Unknown){ return new Unknown(); }
 		
 		return null;
+	}
+	
+	public String toString(){
+		String r = "";
+		if(not)r = r + "not ";
+		return r + booleanTest;
 	}
 }

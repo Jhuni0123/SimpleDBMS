@@ -39,4 +39,13 @@ public class BooleanExpression {
 		}
 		return result;
 	}
+	
+	public String toString(){
+		if(booleanTerms.isEmpty())return "False";
+		String r = "" + booleanTerms.get(0);
+		for(int i=1;i<booleanTerms.size();i++){
+			r = r + " or " + booleanTerms.get(i);
+		}
+		return r;
+	}
 }

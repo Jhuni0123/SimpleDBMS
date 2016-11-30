@@ -407,7 +407,7 @@ BooleanExpression booleanValueExpression() :
    { bterms.add(bterm); }
   (
     < OR >
-    booleanTerm()
+    bterm = booleanTerm()
     { bterms.add(bterm); }
   )*
   { return new BooleanExpression(bterms); }
@@ -423,7 +423,7 @@ BooleanTerm booleanTerm() :
   { bFactors.add(bFactor); }
   (
     < AND >
-    booleanFactor()
+    bFactor = booleanFactor()
     { bFactors.add(bFactor); }
   )*
   { return new BooleanTerm(bFactors); }

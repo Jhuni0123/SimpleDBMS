@@ -423,7 +423,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         break label_5;
       }
       jj_consume_token(OR);
-      booleanTerm();
+      bterm = booleanTerm();
       bterms.add(bterm);
     }
     {if (true) return new BooleanExpression(bterms);}
@@ -446,7 +446,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         break label_6;
       }
       jj_consume_token(AND);
-      booleanFactor();
+      bFactor = booleanFactor();
       bFactors.add(bFactor);
     }
     {if (true) return new BooleanTerm(bFactors);}

@@ -16,5 +16,9 @@ public class ComparableValue extends CompOperand {
 	public Value evaluate(ArrayList<Column> columns, Row row) {
 		return value;
 	}
+	
+	public String toString(){
+		return value.toString();
+	}
 
 }
