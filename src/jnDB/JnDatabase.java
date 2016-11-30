@@ -304,6 +304,7 @@ public class JnDatabase {
     			else { fail++; }
     		}
     	}
+    	
     	for(Row row : table.getRows()){
     		if(bexp.evaluate(table.getColumns(), row) instanceof True){
     			
@@ -317,6 +318,7 @@ public class JnDatabase {
     	// selectList .first.first & .second can be null
     	// fromList pss.second can be null
     	
+    	// FROM
     	HashSet<String> tableNameSet = new HashSet<String>();
     	
     	for(Pair<String,String> pss : fromList){
@@ -340,23 +342,90 @@ public class JnDatabase {
     		if(pss.second != null){ newName = pss.second; }
     		res = res.joinTable(other, newName);
     	}
+    	
+    	// WHERE
 		bexp.evaluate(res.getColumns(), null);
-		System.out.println(bexp.toString());
+		
+		ArrayList<Row> resultRows = new ArrayList<Row>();
+		ArrayList<Integer> maxLens = new ArrayList<Integer>();
+		for(Column col : res.getColumns()){
+			maxLens.add(0);
+		}
     	for(Row row : res.getRows()){
     		if(bexp.evaluate(res.getColumns(), row) instanceof True){
-    			System.out.println(row.toString());
-    		}
-    		else{
-    			System.out.println("fail");
+    			resultRows.add(row);
+    			for(int i=0;i<res.getColumns().size();i++){
+    				maxLens.set(i, Integer.max(maxLens.get(i), row.getValue(i).toString().length()));
+    			}
     		}
     	}
     	
+    	// SELECT
     	if(selectList.isEmpty()){
     		for(Column col : res.getColumns()){
     			selectList.add(new Pair<Pair<String,String>,String>(new Pair<String,String>(col.getTable(),col.getName()),null));
     		}
     	}
     	
+    	ArrayList<Integer> colIndexes = new ArrayList<Integer>();
+    	ArrayList<String> colNameAs = new ArrayList<String>();
+    	int selId = 0;
+    	for(Pair<Pair<String,String>,String> pps : selectList){
+    		Pair<String,String> pss = pps.first;
+    		if(pps.second == null)colNameAs.add(pss.second);
+    		else colNameAs.add(pps.second);
+    		colIndexes.add(0);
+    		int count = 0;
+    		for(int i=0;i<res.getColumns().size();i++){
+    			if(pss.first == null){
+    				if(pss.second.equals(res.getColumns().get(i).getName())){
+    					colIndexes.set(selId, i);
+    					count++;
+    				}
+    			}
+    			else{
+    				if(pss.first.equals(res.getColumns().get(i).getTable()) && pss.second.equals(res.getColumns().get(i).getName())){
+    					colIndexes.set(selId, i);
+    					count++;
+    				}
+    			}
+    		}
+    		if(count != 1){ throw new SelectColumnResolveError(pss.second); }
+    		selId++;
+    	}
+    	
+    	String line = "+";
+    	for(int i=0;i<selectList.size();i++){
+    		int len = Integer.max(maxLens.get(colIndexes.get(i)), colNameAs.get(i).length());
+    		for(int j=0;j<len+2;j++){
+    			line = line+'-';
+    		}
+    		line = line + '+';
+    	}
+    	
+    	// PRINT
+    	System.out.println(line);
+    	System.out.print("|");
+    	for(int i=0;i<selectList.size();i++){
+    		int len = Integer.max(maxLens.get(colIndexes.get(i)), colNameAs.get(i).length());
+    		String format = "%" + (len+1) + "s";
+    		System.out.print(String.format(format, colNameAs.get(i)));
+    		System.out.print(" |");
+    	}
+    	System.out.println("");
+    	System.out.println(line);
+    	
+    	for(Row row : resultRows){
+    		System.out.print("|");
+        	for(int i=0;i<selectList.size();i++){
+        		int len = Integer.max(maxLens.get(colIndexes.get(i)), colNameAs.get(i).length());
+        		String format = "%" + (len+1) + "s";
+        		System.out.print(String.format(format, row.getValue(i)));
+        		System.out.print(" |");
+        	}
+        	System.out.println("");
+    	}
+    	System.out.println(line);
     	
     }
     
