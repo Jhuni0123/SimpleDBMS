@@ -10,4 +10,11 @@ public class Type implements java.io.Serializable {
 		if(this.getClass() == CharType.class){ return ((CharType)this).length() == ((CharType)obj).length(); }
 		return true;
 	}
+	
+	public void check(){
+		if(this instanceof CharType){
+			CharType ct = (CharType)this;
+			ct.check();
+		}
+	}
 }

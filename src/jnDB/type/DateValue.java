@@ -40,7 +40,7 @@ public class DateValue extends Value {
 	}
 	
 	public String toString(){
-		return Integer.toString(year, 4) + "-" + Integer.toString(month,2) + "-" + Integer.toString(day,2);
+		return String.format("%04d", year) + "-" + String.format("%02d", month) + "-" + String.format("%02d", day);
 	}
 
 	@Override

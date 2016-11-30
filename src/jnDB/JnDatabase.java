@@ -31,7 +31,7 @@ import jnDB.type.*;
 
 public class JnDatabase {
 	public static final String CreateTableSuccess(String tableName) { return "'" + tableName + "' table is created"; }
-	public static final String DropSuccess(String tableName) { return "'" + tableName + "' table is droped"; }
+	public static final String DropSuccess(String tableName) { return "'" + tableName + "' table is dropped"; }
 	public static final String NoSuchTable = "No such table";
 	public static final String ShowTablesNoTable = "There is no table";
 	public static final String DeleteResult(int count){ return count + " row(s) are deleted"; }
@@ -129,11 +129,12 @@ public class JnDatabase {
     
     public void createTable(TableSchema schema){
     	if(existsTable(schema.getName())) throw new TableExistenceError();
-    	schema.checkValidity();
+    	
+    	schema.checkValidity(this);
     	Table table = new Table(schema);
     	for(ReferentialConstraint rc : schema.rcList){
-    		table.fkConstraints.add(new FKConstraint(rc.table.getName(), rc.pKeys, rc.fKeys));
-    		Table target = getTable(rc.table.getName());
+    		table.fkConstraints.add(new FKConstraint(rc.tableName, rc.pKeys, rc.fKeys));
+    		Table target = getTable(rc.tableName);
     		target.referencedByTable.add(table.getName());
     		putTable(target);
     	}
@@ -229,7 +230,7 @@ public class JnDatabase {
     		String cName = cnList.get(i);
     		int index = table.getColIndex(cName);
     		if(index == -1){ throw new InsertColumnExistenceError(cName); }
-    		Value v = vList.get(index);
+    		Value v = vList.get(i);
     		if(cols.get(index).isNotNull() && v instanceof NullValue){ throw new InsertColumnNonNullableError(cName); }
     		boolean success = v.castTo(cols.get(index).getType());
     		if(!success){ throw new InsertTypeMismatchError(); }

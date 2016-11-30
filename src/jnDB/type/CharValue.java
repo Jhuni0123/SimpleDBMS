@@ -12,7 +12,7 @@ public class CharValue extends Value{
 	public boolean castTo(Type t){
 		if(t instanceof CharType){
 			CharType ct = (CharType)t;
-			if(value.length() < ct.length()){ return false; }
+			if(value.length() < ct.length()){ return true; }
 			value = value.substring(0, ((CharType) t).length());
 			return true;
 		}

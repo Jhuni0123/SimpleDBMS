@@ -33,11 +33,10 @@ public class MyDBMSParser
         parser.command();
         break;
       }
-      catch (RuntimeException e) {
-        printMessage(e.getMessage());
-      }
       catch (Throwable e) {
         printMessage(SYNTAX_ERROR);
+        System.out.print(PROMPT);
+  
       }
       finally {
         MyDBMSParser.ReInit(System.in);
@@ -49,7 +48,7 @@ public class MyDBMSParser
 
   public static void printMessage(String s) {
     System.out.println(s);
-    System.out.print(PROMPT);
+    //System.out.print(PROMPT);
   }
 }
 
@@ -130,7 +129,12 @@ void queryList() :
 {}
 {
   (
-    query()
+    try { 
+      query()
+  	}
+  	catch(RuntimeException e) {
+      printMessage(e.getMessage());
+  	}
     { System.out.print(PROMPT); }
   )*
 }
@@ -293,8 +297,8 @@ void referentialConstraint(TableSchema schema) :
   tName = tableName()
   cnList2 = columnNameList()
   {
-    table = jdb.checkPrimaryKey(tName,cnList2);
-    schema.addReferentialKey(cnList1, table, cnList2);
+    // table = jdb.checkPrimaryKey(tName,cnList2);
+    schema.addReferentialKey(cnList1, tName, cnList2);
   }
 }
 

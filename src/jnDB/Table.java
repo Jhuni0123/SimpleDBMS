@@ -32,7 +32,7 @@ public class Table implements java.io.Serializable {
 			columns.add(col);
 		}
 		
-		for(String pri : schema.primaryKey){
+		for(String pri : schema.primaryKey.get(0)){
 			columns.get(colNum.get(pri)).setPrimaryKey();
 			primaryKey.add(pri);
 		}
@@ -40,7 +40,7 @@ public class Table implements java.io.Serializable {
 		for(ReferentialConstraint rc : schema.rcList){
 			int l = rc.fKeys.size();
 			for(int i=0;i<l;i++){
-				columns.get(colNum.get(rc.fKeys.get(i))).setForeignKey(rc.table.getName(), rc.pKeys.get(i));
+				columns.get(colNum.get(rc.fKeys.get(i))).setForeignKey(rc.tableName, rc.pKeys.get(i));
 			}
 		}
 	}

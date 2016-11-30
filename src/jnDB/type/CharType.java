@@ -5,7 +5,6 @@ import jnDB.exception.*;
 public class CharType extends Type {
 	private int len;
 	public CharType(int l) {
-		if(l==0)throw new CharLengthError();
 		len = l;
 	}
 	
@@ -15,5 +14,9 @@ public class CharType extends Type {
 	@Override
 	public String toString(){
 		return "char(" + Integer.toString(len) + ")";
+	}
+	
+	public void check(){
+		if(len<=0)throw new CharLengthError();
 	}
 }

@@ -24,11 +24,10 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         parser.command();
         break;
       }
-      catch (RuntimeException e) {
-        printMessage(e.getMessage());
-      }
       catch (Throwable e) {
         printMessage(SYNTAX_ERROR);
+        System.out.print(PROMPT);
+
       }
       finally {
         MyDBMSParser.ReInit(System.in);
@@ -40,7 +39,7 @@ public class MyDBMSParser implements MyDBMSParserConstants {
 
   public static void printMessage(String s) {
     System.out.println(s);
-    System.out.print(PROMPT);
+    //System.out.print(PROMPT);
   }
 
   static final public void command() throws ParseException {
@@ -77,7 +76,11 @@ public class MyDBMSParser implements MyDBMSParserConstants {
         jj_la1[1] = jj_gen;
         break label_1;
       }
-      query();
+      try {
+        query();
+      } catch (RuntimeException e) {
+      printMessage(e.getMessage());
+      }
       System.out.print(PROMPT);
     }
   }
@@ -274,8 +277,8 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     jj_consume_token(REFERENCES);
     tName = tableName();
     cnList2 = columnNameList();
-    table = jdb.checkPrimaryKey(tName,cnList2);
-    schema.addReferentialKey(cnList1, table, cnList2);
+    // table = jdb.checkPrimaryKey(tName,cnList2);
+    schema.addReferentialKey(cnList1, tName, cnList2);
   }
 
   static final public ArrayList<Pair<Pair<String,String>,String>> selectList() throws ParseException {
@@ -775,18 +778,6 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  static private boolean jj_3R_15() {
-    if (jj_scan_token(LEGAL_IDENTIFIER)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_10() {
-    if (jj_3R_11()) return true;
-    if (jj_scan_token(COMP_OP)) return true;
-    if (jj_3R_11()) return true;
-    return false;
-  }
-
   static private boolean jj_3R_13() {
     Token xsp;
     xsp = jj_scanpos;
@@ -800,13 +791,13 @@ public class MyDBMSParser implements MyDBMSParserConstants {
     return false;
   }
 
-  static private boolean jj_3_3() {
+  static private boolean jj_3_1() {
     if (jj_3R_9()) return true;
     if (jj_scan_token(PERIOD)) return true;
     return false;
   }
 
-  static private boolean jj_3_1() {
+  static private boolean jj_3_3() {
     if (jj_3R_9()) return true;
     if (jj_scan_token(PERIOD)) return true;
     return false;
@@ -863,6 +854,18 @@ public class MyDBMSParser implements MyDBMSParserConstants {
   static private boolean jj_3_4() {
     if (jj_3R_9()) return true;
     if (jj_scan_token(PERIOD)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_15() {
+    if (jj_scan_token(LEGAL_IDENTIFIER)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_10() {
+    if (jj_3R_11()) return true;
+    if (jj_scan_token(COMP_OP)) return true;
+    if (jj_3R_11()) return true;
     return false;
   }
 
