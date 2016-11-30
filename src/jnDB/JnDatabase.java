@@ -296,7 +296,37 @@ public class JnDatabase {
     		if(bexp.evaluate(table.getColumns(), row) instanceof True){
     			boolean removable = true;
     			// check removable
-    			
+    			for(String other : table.referencedByTable){
+    				Table refer = getTable(other);
+    				for(FKConstraint fkCons : refer.fkConstraints){
+    					if(fkCons.getRefTableName().equals(tableName)){
+    						boolean exists = false;
+    						ArrayList<Value> pk = new ArrayList<Value>();
+    						for(String k : fkCons.toColumns){
+    							pk.add(row.getValue(table.getColIndex(k)));
+    						}
+    						for(Row refRow : refer.getRows()){
+    							ArrayList<Value> fk = new ArrayList<Value>();
+    							for(String k : fkCons.fromColumns){
+    								fk.add(refRow.getValue(refer.getColIndex(k)));
+    							}
+    							if(pk.equals(fk)){
+    								exists = true;
+    							}
+    						}
+    						if(exists){
+    							for(String k : fkCons.fromColumns){
+    								if(refer.getColumns().get(refer.getColIndex(k)).isNotNull()){
+    									removable = false;
+    									break;
+    								}
+    							}
+    						}
+    						if(!removable)break;
+    					}
+    				}
+    				if(!removable)break;
+    			}
     			
     			if(removable){
         			// remove
