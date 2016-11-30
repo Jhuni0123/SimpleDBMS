@@ -60,7 +60,6 @@ public class TableSchema {
 		
 		for(ReferentialConstraint rc : rcList){
 			Table table = jndb.checkPrimaryKey(rc.tableName, rc.pKeys);
-			if(!jndb.existsTable(rc.tableName))
 			if(rc.fKeys.size() != rc.pKeys.size()) throw new ReferenceTypeError();
 			if((!isUniqueList(rc.fKeys))||(!isUniqueList(rc.pKeys))) throw new DuplicateColumnAppearError();
 			int l = rc.fKeys.size();
