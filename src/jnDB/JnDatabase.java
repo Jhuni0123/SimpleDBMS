@@ -295,9 +295,12 @@ public class JnDatabase {
     		Row row = table.getRows().get(i);
     		if(bexp.evaluate(table.getColumns(), row) instanceof True){
     			boolean removable = true;
+    			// check removable
+    			
     			
     			if(removable){
-        			table.removeRow(i);
+        			// remove
+    				table.removeRow(i);
         			i--;
         			suc++;
     			}
@@ -305,12 +308,8 @@ public class JnDatabase {
     		}
     	}
     	
-    	for(Row row : table.getRows()){
-    		if(bexp.evaluate(table.getColumns(), row) instanceof True){
-    			
-    		}
-    	}
-    	
+    	System.out.println(DeleteResult(suc));
+    	if(fail > 0){ System.out.println(DeleteReferentialIntegrityPassed(fail)); }
     }
     
     public void select(ArrayList<Pair<Pair<String,String>,String>> selectList, ArrayList<Pair<String,String>> fromList, BooleanExpression bexp){
@@ -420,13 +419,12 @@ public class JnDatabase {
         	for(int i=0;i<selectList.size();i++){
         		int len = Integer.max(maxLens.get(colIndexes.get(i)), colNameAs.get(i).length());
         		String format = "%" + (len+1) + "s";
-        		System.out.print(String.format(format, row.getValue(i)));
+        		System.out.print(String.format(format, row.getValue(colIndexes.get(i))));
         		System.out.print(" |");
         	}
         	System.out.println("");
     	}
     	System.out.println(line);
-    	
     }
     
     public void printMessage(String s){

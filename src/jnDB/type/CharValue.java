@@ -41,6 +41,6 @@ public class CharValue extends Value{
 	}
 	
 	public String toString(){
-		return "'" + value + "'";
+		return value;
 	}
 }
