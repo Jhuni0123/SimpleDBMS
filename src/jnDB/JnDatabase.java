@@ -330,6 +330,32 @@ public class JnDatabase {
     			
     			if(removable){
         			// remove
+    				for(String other : table.referencedByTable){
+        				Table refer = getTable(other);
+        				for(FKConstraint fkCons : refer.fkConstraints){
+        					if(fkCons.getRefTableName().equals(tableName)){
+        						ArrayList<Value> pk = new ArrayList<Value>();
+        						for(String k : fkCons.toColumns){
+        							pk.add(row.getValue(table.getColIndex(k)));
+        						}
+        						int rowId = 0;
+        						for(Row refRow : refer.getRows()){
+        							ArrayList<Value> fk = new ArrayList<Value>();
+        							for(String k : fkCons.fromColumns){
+        								fk.add(refRow.getValue(refer.getColIndex(k)));
+        							}
+        							if(pk.equals(fk)){
+        								for(String k : fkCons.fromColumns){
+        									refRow.setValue(refer.getColIndex(k), new NullValue());
+        								}
+        							}
+        							rowId++;
+        						}
+        						
+        					}
+        				}
+        			}
+    				
     				table.removeRow(i);
         			i--;
         			suc++;

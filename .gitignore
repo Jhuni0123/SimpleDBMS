@@ -13,5 +13,5 @@ hs_err_pid*
 /bin/
 
 /db/
-
+/test/
 .DS_Store
